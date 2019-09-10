@@ -1,0 +1,18 @@
+name: Test the action
+on: [push]
+
+jobs:
+    test:
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, osx-latest]
+                dc: [dmd-2.088.0, ldc-1.17.0]
+        name: Check that setting up compiler works
+        runs-on: ${{ matrix.os }}
+        steps:
+            - name: Install
+              uses: ../..
+              with:
+                  compiler: #{{ matrix.dc }}
+            - name: Test
+              run: dub run --yes dub -- --help
