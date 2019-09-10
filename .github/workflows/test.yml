@@ -3,16 +3,34 @@ on: [push]
 
 jobs:
     test:
+        name: Unit tests
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@master
+            - run: npm install
+            - run: npm test
+
+    verify:
+        name: Verify install
         strategy:
             matrix:
-                os: [ubuntu-latest, windows-latest, osx-latest]
+                os: [ubuntu-latest, windows-latest, macOS-latest]
                 dc: [dmd-2.088.0, ldc-1.17.0]
-        name: Check that setting up compiler works
         runs-on: ${{ matrix.os }}
         steps:
-            - name: Install
-              uses: ../..
+            - uses: actions/checkout@master
+
+            - name: Install action dependencies
+              run: npm install --production
+
+            - name: Install D compiler
+              uses: ./
               with:
-                  compiler: #{{ matrix.dc }}
-            - name: Test
-              run: dub run --yes dub -- --help
+                  compiler: ${{ matrix.dc }}
+
+            - name: Verify D compiler ($DC)
+              shell: bash
+              run: $DC .github/hello.d
+
+            - name: Verify D compiler (dub)
+              run: dub run --single -q .github/hello.d

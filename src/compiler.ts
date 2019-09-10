@@ -2,7 +2,7 @@ export interface CompilerDescription {
     name: string;
     version: string;
     url: string;
-    binpath: string;    
+    binpath: string;
 }
 
 export function compiler(description: string): CompilerDescription {
@@ -25,17 +25,17 @@ function dmd(version: string): CompilerDescription {
             name: "dmd",
             version: version,
             url: `http://downloads.dlang.org/releases/2.x/${version}/dmd.${version}.windows.7z`,
-            binpath: "/dmd2/windows/bin"
+            binpath: "\\dmd2\\windows\\bin"
         };
         case "linux": return {
             name: "dmd",
-            version: version,            
+            version: version,
             url: `http://downloads.dlang.org/releases/2.x/${version}/dmd.${version}.linux.tar.xz`,
             binpath: "/dmd2/linux/bin64"
         };
         case "darwin": return {
             name: "dmd",
-            version: version,            
+            version: version,
             url: `http://downloads.dlang.org/releases/2.x/${version}/dmd.${version}.osx.tar.xz`,
             binpath: "/dmd2/osx/bin/"
         };
@@ -50,22 +50,22 @@ function ldc(version: string): CompilerDescription {
 
     switch (process.platform) {
         case "win32": return {
-            name: "ldc",
-            version: version,            
+            name: "ldc2",
+            version: version,
             url: `https://github.com/ldc-developers/ldc/releases/download/v${version}/ldc2-${version}-windows-multilib.7z`,
-            binpath: ""
+            binpath: `\\ldc2-${version}-windows-multilib\\bin`
         };
         case "linux": return {
-            name: "ldc",
-            version: version,            
+            name: "ldc2",
+            version: version,
             url: `https://github.com/ldc-developers/ldc/releases/download/v${version}/ldc2-${version}-linux-x86_64.tar.xz`,
-            binpath: ""
+            binpath: `/ldc2-${version}-linux-x86_64/bin`
         };
         case "darwin": return {
-            name: "ldc",
-            version: version,            
+            name: "ldc2",
+            version: version,
             url: `https://github.com/ldc-developers/ldc/releases/download/v${version}/ldc2-${version}-osx-x86_64.tar.xz`,
-            binpath: ""
+            binpath: `/ldc2-${version}-osx-x86_64/bin`
         };
         default:
             throw new Error("unsupported platform: " + process.platform);
