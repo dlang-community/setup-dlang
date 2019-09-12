@@ -1,9 +1,25 @@
-# JavaScript Action Template
+## Usage Example
 
-This template offers an easy way to get started writing a JavaScript action with TypeScript compile time support, unit testing with Jest and using the GitHub Actions Toolkit.
+```yml
+name: Test My D Project
+on: [push, pull_request]
 
-## Getting Started
+jobs:
+    test:
+        name: Test
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, macOS-latest]
+                dc: [dmd-2.088.0, ldc-1.17.0]
+        runs-on: ${{ matrix.os }}
+        steps:
+            - uses: actions/checkout@master
 
-See the walkthrough located [here](https://github.com/actions/toolkit/blob/master/docs/javascript-action.md).
+            - name: Install D compiler
+              uses: mihails-strasuns/setup-dlang@v0
+              with:
+                  compiler: ${{ matrix.dc }}
 
-In addition to walking your through how to create an action, it also provides strategies for versioning, releasing and referencing your actions.
+            - name: Run tests
+              run: dub -q test
+```
