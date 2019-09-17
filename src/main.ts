@@ -9,7 +9,7 @@ async function run() {
         if (process.arch != "x64")
             throw new Error("Only x64 arch is supported by all platforms");
 
-        const input = core.getInput('compiler');
+        const input = core.getInput('compiler') || "dmd-latest";
         const descr = await compiler(input);
 
         console.log(`Enabling ${input}`);
