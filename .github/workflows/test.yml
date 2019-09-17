@@ -14,7 +14,7 @@ jobs:
             - uses: actions/checkout@master
 
             - name: Install action dependencies
-              if: github.ref == 'master' || github.event_name == 'pull_request'
+              if: (! startsWith(github.ref, 'v'))
               run: npm install --production
 
             - name: Install D compiler
