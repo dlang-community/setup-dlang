@@ -32,11 +32,12 @@ async function dmd(version: string): Promise<CompilerDescription> {
 		    break;
 	}
 
-    if (!version.match(/2.(\d+).(\d+)/))
+    const matches = version.match(/(2.\d+.\d+)(-.+)?/);
+    if (!matches)
         throw new Error("unrecognized DMD version: " + version);
 
     const base_url = beta ?
-          `http://downloads.dlang.org/pre-releases/2.x/${version}/dmd.${version}`
+          `http://downloads.dlang.org/pre-releases/2.x/${matches[1]}/dmd.${version}`
         : `http://downloads.dlang.org/releases/2.x/${version}/dmd.${version}`;
 
     switch (process.platform) {
