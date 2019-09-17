@@ -2,14 +2,6 @@ name: Test the action
 on: [push, pull_request]
 
 jobs:
-    test:
-        name: Unit tests
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@master
-            - run: npm install
-            - run: npm test
-
     verify:
         name: Verify install
         strategy:
