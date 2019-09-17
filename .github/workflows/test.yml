@@ -1,27 +1,20 @@
 name: Test the action
-on: [push]
+on: [push, pull_request]
 
 jobs:
-    test:
-        name: Unit tests
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@master
-            - run: npm install
-            - run: npm test
-
     verify:
         name: Verify install
         strategy:
+            max-parallel: 4
             matrix:
                 os: [ubuntu-latest, windows-latest, macOS-latest]
-                dc: [dmd-2.088.0, ldc-1.17.0]
+                dc: [dmd-2.088.0, ldc-1.17.0, ldc-latest, ldc-beta, dmd-latest, dmd-beta, '']
         runs-on: ${{ matrix.os }}
         steps:
             - uses: actions/checkout@master
 
             - name: Install action dependencies
-              if: github.ref == 'master'
+              if: (! startsWith(github.ref, 'v'))
               run: npm install --production
 
             - name: Install D compiler
