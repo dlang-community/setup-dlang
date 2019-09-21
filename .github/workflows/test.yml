@@ -15,8 +15,7 @@ jobs:
             - uses: actions/checkout@master
 
             - name: Install action dependencies
-              if: (! startsWith(github.ref, 'v'))
-              run: npm install --production
+              run: npm install --production || true
 
             - name: Install D compiler
               uses: ./
