@@ -51,15 +51,7 @@ async function extract(format: string, archive: string, into?: string) {
     else if (/\.tar(\.\w+)?$/.test(format))
         return await tc.extractTar(archive, into, 'x');
 
-    switch (process.platform) {
-        case "win32":
-            return await tc.extract7z(archive, into);
-        case "linux":
-        case "darwin":
-            return await tc.extractTar(archive, into, 'x');
-        default:
-            throw new Error("unsupported platform: " + process.platform);
-    }
+    throw new Error("unsupported archive format: " + format);
 }
 
 run();

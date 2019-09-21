@@ -5,10 +5,11 @@ jobs:
     verify:
         name: Verify install
         strategy:
-            max-parallel: 4
+            max-parallel: 5
             matrix:
                 os: [ubuntu-latest, windows-latest, macOS-latest]
-                dc: [dmd-2.088.0, ldc-1.17.0, ldc-latest, ldc-beta, dmd-latest, dmd-beta, '']
+                dc: [ldc-1.17.0, ldc-latest, ldc-beta, ldc-master,
+                     dmd-2.088.0, dmd-latest, dmd-beta, dmd-master, '']
         runs-on: ${{ matrix.os }}
         steps:
             - uses: actions/checkout@master
