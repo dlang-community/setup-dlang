@@ -72,9 +72,9 @@ async function dmd(version: string): Promise<CompilerDescription> {
     }
 
     const base_url = version == "master" ?
-          `http://downloads.dlang.org/nightlies/dmd-master/dmd.${version}`
+        `http://downloads.dlang.org/nightlies/dmd-master/dmd.${version}`
         : beta ? `http://downloads.dlang.org/pre-releases/2.x/${folder}/dmd.${version}`
-        : `http://downloads.dlang.org/releases/2.x/${folder}/dmd.${version}`;
+            : `http://downloads.dlang.org/releases/2.x/${folder}/dmd.${version}`;
 
     const download_dub = minor !== undefined && minor < 72;
 
@@ -84,7 +84,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
             version: version,
             url: universal ? `${base_url}.zip`
                 : minor !== undefined && minor < 69 ? `${base_url}.windows.zip`
-                : `${base_url}.windows.7z`,
+                    : `${base_url}.windows.7z`,
             binpath: "\\dmd2\\windows\\bin",
             download_dub: download_dub
         };
@@ -93,7 +93,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
             version: version,
             url: universal ? `${base_url}.zip`
                 : minor !== undefined && minor < 69 ? `${base_url}.linux.zip`
-                : `${base_url}.linux.tar.xz`,
+                    : `${base_url}.linux.tar.xz`,
             binpath: "/dmd2/linux/bin64",
             download_dub: download_dub
         };
@@ -102,7 +102,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
             version: version,
             url: universal ? `${base_url}.zip`
                 : minor !== undefined && minor < 69 ? `${base_url}.osx.zip`
-                : `${base_url}.osx.tar.xz`,
+                    : `${base_url}.osx.tar.xz`,
             binpath: "/dmd2/osx/bin",
             download_dub: download_dub
         };
@@ -138,7 +138,7 @@ async function ldc(version: string): Promise<CompilerDescription> {
         throw new Error("unrecognized LDC version: " + version);
 
     const base_url = ci ?
-          `https://github.com/ldc-developers/ldc/releases/download/CI/ldc2-${version}`
+        `https://github.com/ldc-developers/ldc/releases/download/CI/ldc2-${version}`
         : `https://github.com/ldc-developers/ldc/releases/download/v${version}/ldc2-${version}`;
 
     switch (process.platform) {
