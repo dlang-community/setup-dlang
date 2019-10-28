@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 import * as tc from '@actions/tool-cache';
 import { mkdirP } from '@actions/io';
+import * as gpg from './gpg';
 
 import { compiler, legacyDub } from './compiler';
 
@@ -23,7 +24,12 @@ async function run() {
         }
         else {
             console.log(`Downloading ${descr.url}`);
-            const archive = await tc.downloadTool(descr.url);
+            const archive = await tc.downloadTool(descr.url);            
+            if (descr.sig)
+            {
+                console.log("Verifying the download with GPG");
+                await gpg.verify(archive, descr.sig);
+            }
             const dc_path = await extract(descr.url, archive);
 
             if (descr.download_dub) {
@@ -39,6 +45,7 @@ async function run() {
         core.exportVariable("DC", descr.name);
         console.log("Done");
     } catch (error) {
+        console.log(error);
         core.setFailed(error.message);
     }
 }
