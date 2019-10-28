@@ -13,6 +13,7 @@ jobs:
     name: Verify install
     strategy:
       max-parallel: 5
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
         dc:
