@@ -1,30 +1,49 @@
 name: Test the action
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    - "master"
+    - "v0"
+  pull_request:
+    branches:
+    - "*"
 
 jobs:
-    verify:
-        name: Verify install
-        strategy:
-            max-parallel: 5
-            matrix:
-                os: [ubuntu-latest, windows-latest, macOS-latest]
-                dc: [ldc-1.17.0, ldc-latest, ldc-beta, ldc-master,
-                     dmd-2.088.0, dmd-latest, dmd-beta, dmd-master, '']
-        runs-on: ${{ matrix.os }}
-        steps:
-            - uses: actions/checkout@master
+  verify:
+    name: Verify install
+    strategy:
+      max-parallel: 5
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        dc:
+          [
+            ldc-1.17.0,
+            ldc-latest,
+            ldc-beta,
+            ldc-master,
+            dmd-2.088.0,
+            dmd-latest,
+            dmd-beta,
+            dmd-master,
+            "",
+          ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@master
 
-            - name: Install action dependencies
-              run: npm install --production || true
+      - name: Install action dependencies
+        if: (! startsWith(github.ref, 'v'))
+        run: npm install --production || true
 
-            - name: Install D compiler
-              uses: ./
-              with:
-                  compiler: ${{ matrix.dc }}
+      - name: Install D compiler
+        uses: ./
+        with:
+          compiler: ${{ matrix.dc }}
 
-            - name: Verify D compiler ($DC)
-              shell: bash
-              run: $DC .github/hello.d
+      - name: Verify D compiler ($DC)
+        shell: bash
+        run: $DC .github/hello.d
 
-            - name: Verify D compiler (dub)
-              run: dub run --single -q .github/hello.d
+      - name: Verify D compiler (dub)
+        run: dub run --single -q .github/hello.d

@@ -72,9 +72,9 @@ async function dmd(version: string): Promise<CompilerDescription> {
     }
 
     const base_url = version == "master" ?
-          `http://downloads.dlang.org/nightlies/dmd-master/dmd.${version}`
+        `http://downloads.dlang.org/nightlies/dmd-master/dmd.${version}`
         : beta ? `http://downloads.dlang.org/pre-releases/2.x/${folder}/dmd.${version}`
-        : `http://downloads.dlang.org/releases/2.x/${folder}/dmd.${version}`;
+            : `http://downloads.dlang.org/releases/2.x/${folder}/dmd.${version}`;
 
     const download_dub = minor !== undefined && minor < 72;
 
@@ -84,7 +84,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
             version: version,
             url: universal ? `${base_url}.zip`
                 : minor !== undefined && minor < 69 ? `${base_url}.windows.zip`
-                : `${base_url}.windows.7z`,
+                    : `${base_url}.windows.7z`,
             binpath: "\\dmd2\\windows\\bin",
             download_dub: download_dub
         };
@@ -93,7 +93,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
             version: version,
             url: universal ? `${base_url}.zip`
                 : minor !== undefined && minor < 69 ? `${base_url}.linux.zip`
-                : `${base_url}.linux.tar.xz`,
+                    : `${base_url}.linux.tar.xz`,
             binpath: "/dmd2/linux/bin64",
             download_dub: download_dub
         };
@@ -102,7 +102,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
             version: version,
             url: universal ? `${base_url}.zip`
                 : minor !== undefined && minor < 69 ? `${base_url}.osx.zip`
-                : `${base_url}.osx.tar.xz`,
+                    : `${base_url}.osx.tar.xz`,
             binpath: "/dmd2/osx/bin",
             download_dub: download_dub
         };
@@ -122,14 +122,21 @@ async function ldc(version: string): Promise<CompilerDescription> {
             version = await body_as_text("https://ldc-developers.github.io/LATEST_BETA");
             break;
         case "master":
-            // see https://github.com/ldc-developers/ldc/releases/tag/CI
-            // http to avoid certificate issues as we are only grabbing a commit hash that must be available as github release anyway
-            const links = await body_as_text("http://thecybershadow.net/d/github-ldc/");
-            // we don't simply trust the links in this endpoint!
-            if (!links.startsWith("https://github.com/ldc-developers/ldc/releases/download/CI/ldc-"))
-                throw new Error("Unexpected response from CyberShadow LDC API endpoint");
-
-            version = links.substr("https://github.com/ldc-developers/ldc/releases/download/CI/ldc-".length, 8);
+	        let assets = JSON.parse(
+		        await body_as_text("https://api.github.com/repos/LDC-Developers/LDC/releases/tags/CI")
+	        )["assets"];
+	        if (assets.length == 0)
+		        throw new Error("No assets found for LDC CI release");	
+	        assets.sort(function(a, b) {
+		        const date_a = Date.parse(a["updated_at"]);
+		        const date_b = Date.parse(b["updated_at"]);
+		        return date_a > date_b ? -1 : 1;
+	        });
+	        const latest = assets[0]["name"];
+            const matches = latest.match(/^ldc2?-([0-9a-fA-F]{5,12})-.+/);
+            if (!matches)
+                throw new Error(`Unexpected naming format for the latest LDC asset: ${latest}`);
+            version = matches[1];
             ci = true;
             break;
     }
@@ -138,7 +145,7 @@ async function ldc(version: string): Promise<CompilerDescription> {
         throw new Error("unrecognized LDC version: " + version);
 
     const base_url = ci ?
-          `https://github.com/ldc-developers/ldc/releases/download/CI/ldc2-${version}`
+        `https://github.com/ldc-developers/ldc/releases/download/CI/ldc2-${version}`
         : `https://github.com/ldc-developers/ldc/releases/download/v${version}/ldc2-${version}`;
 
     switch (process.platform) {
