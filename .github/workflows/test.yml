@@ -36,10 +36,14 @@ jobs:
         if: (! startsWith(github.ref, 'v'))
         run: npm install --production || true
 
+      - run: brew install gnupg
+        if: matrix.os == 'macOS-latest'
+
       - name: Install D compiler
         uses: ./
         with:
           compiler: ${{ matrix.dc }}
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify D compiler ($DC)
         shell: bash
