@@ -58,3 +58,33 @@ Valid version examples are:
 - `ldc-1.18.0-beta1`
 - `dmd-master`
 - `ldc-master`
+
+## ldc-master
+
+To avoid Github API request throttling, an extra parameter must be supplied to
+use ldc-master toolchain reliably:
+
+```yml
+name: Run all D Tests
+on: [push, pull_request]
+
+jobs:
+    test:
+        name: Dub Tests
+        strategy:
+            matrix:
+                os: [ubuntu-latest, osx-lastest, windows-latest]
+                dc: [ldc-master]
+        runs-on: ${{ matrix.os }}
+        steps:
+            - uses: actions/checkout@v1
+
+            - name: Install D compiler
+              uses: mihails-strasuns/setup-dlang@v0.3.0
+              with:
+                  compiler: ${{ matrix.dc }}
+                  gh_token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Run tests
+              run: dub -q test
+```

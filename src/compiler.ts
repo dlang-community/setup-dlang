@@ -14,13 +14,13 @@ export interface DubDescription {
     url: string;
 }
 
-export async function compiler(description: string): Promise<CompilerDescription> {
+export async function compiler(description: string, gh_token: string): Promise<CompilerDescription> {
     const matches = description.match(/^(\w+)-(.+)$/);
     if (!matches) throw new Error("invalid compiler string: " + description);
 
     switch (matches[1]) {
         case "dmd": return await dmd(matches[2]);
-        case "ldc": return await ldc(matches[2]);
+        case "ldc": return await ldc(matches[2], gh_token);
         default: throw new Error("unrecognized compiler: " + matches[1]);
     }
 }
@@ -115,7 +115,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
     }
 }
 
-async function ldc(version: string): Promise<CompilerDescription> {
+async function ldc(version: string, gh_token: string): Promise<CompilerDescription> {
     let ci = false;
 
     switch (version) {
@@ -126,17 +126,23 @@ async function ldc(version: string): Promise<CompilerDescription> {
             version = await body_as_text("https://ldc-developers.github.io/LATEST_BETA");
             break;
         case "master":
-	        let assets = JSON.parse(
-		        await body_as_text("https://api.github.com/repos/LDC-Developers/LDC/releases/tags/CI")
-	        )["assets"];
-	        if (assets.length == 0)
-		        throw new Error("No assets found for LDC CI release");	
-	        assets.sort(function(a, b) {
-		        const date_a = Date.parse(a["updated_at"]);
-		        const date_b = Date.parse(b["updated_at"]);
-		        return date_a > date_b ? -1 : 1;
-	        });
-	        const latest = assets[0]["name"];
+            let json = await body_as_text(
+                `https://api.github.com/repos/LDC-Developers/LDC/releases/tags/CI`,
+                gh_token
+            );
+            let assets = JSON.parse(json)["assets"];
+            if (assets == undefined) {
+                console.error("Couldn't load assets json");
+                console.log(json)
+            }
+            if (assets.length == 0)
+                throw new Error("No assets found for LDC CI release");
+            assets.sort(function (a, b) {
+                const date_a = Date.parse(a["updated_at"]);
+                const date_b = Date.parse(b["updated_at"]);
+                return date_a > date_b ? -1 : 1;
+            });
+            const latest = assets[0]["name"];
             const matches = latest.match(/^ldc2?-([0-9a-fA-F]{5,12})-.+/);
             if (!matches)
                 throw new Error(`Unexpected naming format for the latest LDC asset: ${latest}`);
