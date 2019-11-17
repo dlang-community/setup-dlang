@@ -43,7 +43,7 @@ jobs:
         uses: ./
         with:
           compiler: ${{ matrix.dc }}
-          gh-token: ${{ secrets.GITHUB_TOKEN }}
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify D compiler ($DC)
         shell: bash
