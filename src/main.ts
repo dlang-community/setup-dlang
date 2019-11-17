@@ -11,7 +11,8 @@ async function run() {
             throw new Error("Only x64 arch is supported by all platforms");
 
         const input = core.getInput('compiler') || "dmd-latest";
-        const descr = await compiler(input);
+        const gh_token = core.getInput('gh_token') || "";
+        const descr = await compiler(input, gh_token);
 
         console.log(`Enabling ${input}`);
 
@@ -24,7 +25,7 @@ async function run() {
         }
         else {
             console.log(`Downloading ${descr.url}`);
-            const archive = await tc.downloadTool(descr.url);            
+            const archive = await tc.downloadTool(descr.url);
             if (descr.sig)
             {
                 console.log("Verifying the download with GPG");
@@ -41,7 +42,9 @@ async function run() {
             cached = await tc.cacheDir(dc_path, 'dc', cache_tag);
         }
 
-        core.addPath(cached + descr.binpath);
+        const binpath = cached + descr.binpath;
+        console.log("Adding '" + binpath + "' to path");
+        core.addPath(binpath);
         core.exportVariable("DC", descr.name);
         console.log("Done");
     } catch (error) {
