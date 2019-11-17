@@ -42,7 +42,9 @@ async function run() {
             cached = await tc.cacheDir(dc_path, 'dc', cache_tag);
         }
 
-        core.addPath(cached + descr.binpath);
+        const binpath = cached + descr.binpath;
+        console.log("Adding '" + binpath + "' to path");
+        core.addPath(binpath);
         core.exportVariable("DC", descr.name);
         console.log("Done");
     } catch (error) {
