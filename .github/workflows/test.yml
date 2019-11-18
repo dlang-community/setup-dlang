@@ -34,6 +34,7 @@ jobs:
 
       - name: Install action dependencies
         if: (! startsWith(github.ref, 'v'))
+        shell: bash
         run: npm install --production || true
 
       - run: brew install gnupg
