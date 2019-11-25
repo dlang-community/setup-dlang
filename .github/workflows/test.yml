@@ -36,9 +36,6 @@ jobs:
         if: (! startsWith(github.ref, 'v'))
         run: npm install --production
 
-      - run: brew install gnupg
-        if: matrix.os == 'macOS-latest'
-
       - name: Install D compiler
         uses: ./
         with:
