@@ -29,6 +29,7 @@ async function run() {
             if (descr.sig)
             {
                 console.log("Verifying the download with GPG");
+                await gpg.install();
                 await gpg.verify(archive, descr.sig);
             }
             const dc_path = await extract(descr.url, archive);

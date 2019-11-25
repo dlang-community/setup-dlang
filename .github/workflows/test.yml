@@ -37,9 +37,6 @@ jobs:
         shell: bash
         run: npm install --production || true
 
-      - run: brew install gnupg
-        if: matrix.os == 'macOS-latest'
-
       - name: Install D compiler
         uses: ./
         with:

@@ -27,3 +27,11 @@ export async function verify(file_path: string, sig_url: string) {
     // will throw for non-0 exit status
     await gpg_process;    
 }
+
+export async function install() {
+    // other platforms have gpg pre-installed
+    if (process.platform == "darwin") {
+        const brew_process = <any> spawn('brew', [ 'install', 'gnupg' ], {});
+        await brew_process;
+    }
+}
