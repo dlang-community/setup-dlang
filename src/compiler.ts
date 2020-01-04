@@ -6,6 +6,7 @@ export interface CompilerDescription {
     version: string;
     url: string;
     binpath: string;
+    libpath : string;
     sig?: string;
     download_dub?: boolean;
 }
@@ -87,6 +88,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
                 : minor !== undefined && minor < 69 ? `${base_url}.windows.zip`
                     : `${base_url}.windows.7z`,
             binpath: "\\dmd2\\windows\\bin",
+            libpath: "\\dmd2\\windows\\lib64",
             download_dub: download_dub,
             sig: `${base_url}.windows.7z.sig`
         };
@@ -97,6 +99,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
                 : minor !== undefined && minor < 69 ? `${base_url}.linux.zip`
                     : `${base_url}.linux.tar.xz`,
             binpath: "/dmd2/linux/bin64",
+            libpath: "/dmd2/linux/lib64",
             download_dub: download_dub,
             sig: `${base_url}.linux.tar.xz.sig`
         };
@@ -107,6 +110,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
                 : minor !== undefined && minor < 69 ? `${base_url}.osx.zip`
                     : `${base_url}.osx.tar.xz`,
             binpath: "/dmd2/osx/bin",
+            libpath: "/dmd2/linux/lib64",
             download_dub: download_dub,
             sig: `${base_url}.osx.tar.xz.sig`
         };
@@ -163,14 +167,15 @@ async function ldc_resolve_master(gh_token: string): Promise<CompilerDescription
         });
 
     const latest = assets[0];
-
+    const base_path = (process.platform == "win32") ?
+        `\\ldc2-${latest.version}-${suffix}\\` :
+        `/ldc2-${latest.version}-${suffix}/`;
     return {
         name: "ldc2",
         version: latest.version,
         url: "https://github.com/ldc-developers/ldc/releases/download/CI/" + latest.name,
-        binpath: (process.platform == "win32") ?
-            `\\ldc2-${latest.version}-${suffix}\\bin` :
-            `/ldc2-${latest.version}-${suffix}/bin`
+        binpath: `${base_path}bin`,
+        libpath: `${base_path}lib64`
     };
 }
 
@@ -196,19 +201,22 @@ async function ldc(version: string, gh_token: string): Promise<CompilerDescripti
             name: "ldc2",
             version: version,
             url: `${base_url}-windows-multilib.7z`,
-            binpath: `\\ldc2-${version}-windows-multilib\\bin`
+            binpath: `\\ldc2-${version}-windows-multilib\\bin`,
+            libpath: `\\ldc2-${version}-windows-multilib\\lib64`
         };
         case "linux": return {
             name: "ldc2",
             version: version,
             url: `${base_url}-linux-x86_64.tar.xz`,
-            binpath: `/ldc2-${version}-linux-x86_64/bin`
+            binpath: `/ldc2-${version}-linux-x86_64/bin`,
+            libpath: `/ldc2-${version}-linux-x86_64/lib64`
         };
         case "darwin": return {
             name: "ldc2",
             version: version,
             url: `${base_url}-osx-x86_64.tar.xz`,
-            binpath: `/ldc2-${version}-osx-x86_64/bin`
+            binpath: `/ldc2-${version}-osx-x86_64/bin`,
+            libpath: `/ldc2-${version}-osx-x86_64/lib64`
         };
         default:
             throw new Error("unsupported platform: " + process.platform);

@@ -18,11 +18,11 @@ jobs:
         os: [ubuntu-latest, windows-latest, macOS-latest]
         dc:
           [
-            ldc-1.17.0,
+            ldc-1.19.0,
             ldc-latest,
             ldc-beta,
             ldc-master,
-            dmd-2.088.0,
+            dmd-2.089.0,
             dmd-latest,
             dmd-beta,
             dmd-master,
@@ -44,7 +44,11 @@ jobs:
 
       - name: Verify D compiler ($DC)
         shell: bash
-        run: $DC .github/hello.d
+        run: $DC .github/hello.d && ./hello
+
+      - name: Verify D compiler ($DC, shared)
+        shell: bash
+        run: $DC -shared .github/hello.d && ./hello
 
       - name: Verify D compiler (dub)
         run: dub run --single -q .github/hello.d
