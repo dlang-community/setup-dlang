@@ -3,8 +3,8 @@ description: "Installs the requested D compiler"
 author: "Mihails Strasuns"
 inputs:
   compiler:
-    description: "Compiler version string, for example dmd-2.088.0"
-    default: "dmd-2.088.0"
+    description: "Compiler version string, for example 'dmd-latest' or 'ldc-1.20.1'"
+    default: "dmd-latest"
 runs:
   using: "node12"
   main: "lib/main.js"
