@@ -2,8 +2,7 @@ name: Test the action
 on:
   push:
     branches:
-    - "master"
-    - "v0"
+    - "v*"
   pull_request:
     branches:
     - "*"
@@ -31,10 +30,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@master
-
-      - name: Install action dependencies
-        if: (! startsWith(github.ref, 'v'))
-        run: npm install --production
 
       - name: Install D compiler
         uses: ./
