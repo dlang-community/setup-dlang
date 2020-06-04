@@ -8,7 +8,7 @@ Basic usage:
 ```yml
 steps:
     - uses: actions/checkout@v2
-    - uses: mihails-strasuns/setup-dlang@v0.5.0
+    - uses: dlang-community/setup-dlang@v1
       with:
         compiler: dmd-latest
     - name: Run tests
@@ -35,7 +35,7 @@ jobs:
             - uses: actions/checkout@v2
 
             - name: Install D compiler
-              uses: mihails-strasuns/setup-dlang@v0.5.0
+              uses: dlang-community/setup-dlang@v1
               with:
                   compiler: ${{ matrix.dc }}
 
