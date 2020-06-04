@@ -1,6 +1,6 @@
 {
   "name": "setup-dlang",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": false,
   "description": "Installation of the requested D compiler",
   "main": "lib/main.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mihails-strasuns/setup-dlang.git"
+    "url": "git+https://github.com/dlang-community/setup-dlang.git"
   },
   "keywords": [
     "actions",
