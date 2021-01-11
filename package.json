@@ -1,6 +1,6 @@
 {
   "name": "setup-dlang",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": false,
   "description": "Installation of the requested D compiler",
   "main": "lib/main.js",
@@ -20,10 +20,10 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.6",
-    "@actions/io": "^1.0.1",
-    "@actions/tool-cache": "^1.1.2",
-    "promisify-child-process": "^3.1.1",
-    "typed-rest-client": "^1.7.3"
+    "@actions/io": "^1.0.2",
+    "@actions/tool-cache": "^1.6.1",
+    "promisify-child-process": "^3.1.4",
+    "typed-rest-client": "^1.8.0"
   },
   "devDependencies": {
     "@types/node": "^12.7.4",
