@@ -1,6 +1,6 @@
 {
   "name": "setup-dlang",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "private": false,
   "description": "Installation of the requested D compiler",
   "main": "lib/main.js",
