@@ -11,5 +11,4 @@ inputs:
     required: false
 runs:
   using: "node12"
-  pre:  "lib/export_certs.js"
   main: "lib/main.js"

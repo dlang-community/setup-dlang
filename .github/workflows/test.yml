@@ -31,10 +31,6 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      # Pre steps don't run when using local actions
-      - name: Run pre step
-        run: node lib/export_certs.js
-
       - name: Install D compiler
         uses: ./
         with:
