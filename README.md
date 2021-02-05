@@ -7,12 +7,12 @@ Automatically downloads and installs the D programming language compiler [DMD](h
 Basic usage:
 ```yml
 steps:
-    - uses: actions/checkout@v2
-    - uses: dlang-community/setup-dlang@v1
-      with:
-        compiler: dmd-latest
-    - name: Run tests
-      run: dub test
+  - uses: actions/checkout@v2
+  - uses: dlang-community/setup-dlang@v1
+    with:
+      compiler: dmd-latest
+  - name: Run tests
+    run: dub test
 ```
 
 Matrix testing:
@@ -21,26 +21,26 @@ name: Run all D Tests
 on: [push, pull_request]
 
 jobs:
-    test:
-        name: Dub Tests
-        strategy:
-            matrix:
-                os: [ubuntu-latest, windows-latest, macOS-latest]
-                dc: [dmd-latest, ldc-latest, dmd-2.085.0, ldc-1.17.0]
-            exclude:
-                - { os: macOS-latest, dc: dmd-2.085.0 }
+  test:
+    name: Dub Tests
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        dc: [dmd-latest, ldc-latest, dmd-2.085.0, ldc-1.17.0]
+        exclude:
+          - { os: macOS-latest, dc: dmd-2.085.0 }
 
-        runs-on: ${{ matrix.os }}
-        steps:
-            - uses: actions/checkout@v2
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
 
-            - name: Install D compiler
-              uses: dlang-community/setup-dlang@v1
-              with:
-                  compiler: ${{ matrix.dc }}
+      - name: Install D compiler
+        uses: dlang-community/setup-dlang@v1
+        with:
+          compiler: ${{ matrix.dc }}
 
-            - name: Run tests
-              run: dub -q test
+      - name: Run tests
+        run: dub -q test
 ```
 The above example test 11 possible combinations: the latest `dmd` and latest `ldc` on all three platforms,
 `ldc-1.17.0` on all three platforms, and `dmd-2.085.0` on `ubuntu-latest` and `windows-latest`.
