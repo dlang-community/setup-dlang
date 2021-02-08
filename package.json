@@ -1,8 +1,8 @@
 {
   "name": "setup-dlang",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "private": false,
-  "description": "Installation of the requested D compiler",
+  "description": "GitHub Action for setting up a @dlang CI environment",
   "main": "dist/index.js",
   "scripts": {
     "build": "ncc build src/main.ts -o dist --minify --target es2017"
