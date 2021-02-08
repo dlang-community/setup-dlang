@@ -3,9 +3,9 @@
   "version": "1.0.6",
   "private": false,
   "description": "Installation of the requested D compiler",
-  "main": "lib/main.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "ncc build src/main.ts -o dist --minify --target es2017"
   },
   "repository": {
     "type": "git",
