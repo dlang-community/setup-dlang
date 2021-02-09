@@ -47,3 +47,16 @@ jobs:
 
       - name: Verify D compiler (dub)
         run: dub run --single -q .github/hello.d
+
+      - name: Install Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: Ensure `dist/index.js` is up to date
+        run: |
+          set -euxo pipefail
+          npm ci
+          npm run build
+          git diff --stat --exit-code HEAD
+        shell: bash
