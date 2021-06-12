@@ -63,7 +63,8 @@ async function dmd(version: string): Promise<CompilerDescription> {
 
     let folder = beta ? matches![1] : version;
 
-    const minor = version == "master" ? undefined : parseInt(matches![2]);
+    const nightly = version == "master";
+    const minor = nightly ? undefined : parseInt(matches![2]);
     let universal = false;
     if (minor !== undefined && minor < 65) {
         if (version.endsWith(".0")) {
@@ -73,8 +74,8 @@ async function dmd(version: string): Promise<CompilerDescription> {
         universal = true;
     }
 
-    const base_url = version == "master" ?
-        `http://downloads.dlang.org/nightlies/dmd-master/dmd.${version}`
+    const base_url = nightly ?
+        `https://github.com/dlang/dmd/releases/download/nightly/dmd.${version}`
         : beta ? `http://downloads.dlang.org/pre-releases/2.x/${folder}/dmd.${version}`
             : `http://downloads.dlang.org/releases/2.x/${folder}/dmd.${version}`;
 
@@ -90,7 +91,8 @@ async function dmd(version: string): Promise<CompilerDescription> {
             binpath: "\\dmd2\\windows\\bin",
             libpath: "\\dmd2\\windows\\lib64",
             download_dub: download_dub,
-            sig: `${base_url}.windows.7z.sig`
+            // Signatures for nightly releases are not available (yet?)
+            sig: nightly ? undefined : `${base_url}.windows.7z.sig`
         };
         case "linux": return {
             name: "dmd",
@@ -101,7 +103,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
             binpath: "/dmd2/linux/bin64",
             libpath: "/dmd2/linux/lib64",
             download_dub: download_dub,
-            sig: `${base_url}.linux.tar.xz.sig`
+            sig: nightly ? undefined : `${base_url}.linux.tar.xz.sig`
         };
         case "darwin": return {
             name: "dmd",
@@ -112,7 +114,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
             binpath: "/dmd2/osx/bin",
             libpath: "/dmd2/linux/lib64",
             download_dub: download_dub,
-            sig: `${base_url}.osx.tar.xz.sig`
+            sig: nightly ? undefined : `${base_url}.osx.tar.xz.sig`
         };
         default:
             throw new Error("unsupported platform: " + process.platform);
