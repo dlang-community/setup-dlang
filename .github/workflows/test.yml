@@ -41,6 +41,11 @@ jobs:
         shell: bash
         run: $DC .github/hello.d && ./hello
 
+      - name: Verify D compiler wtih explicit bitness ($DC)
+        if: ${{ env['DC'] == 'dmd' }}
+        shell: bash
+        run: $DC -m64 .github/hello.d && ./hello
+
       - name: Verify D compiler ($DC, shared)
         shell: bash
         run: $DC -shared .github/hello.d && ./hello
