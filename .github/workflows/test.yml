@@ -21,7 +21,7 @@ jobs:
             ldc-latest,
             ldc-beta,
             ldc-master,
-            dmd-2.089.0,
+            dmd-2.097.0,
             dmd-latest,
             dmd-beta,
             dmd-master,
