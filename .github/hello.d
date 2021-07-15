@@ -3,6 +3,8 @@
  +/
 
 void main() {
-    import std.stdio;
+    import std.stdio, std.net.curl;
     writeln("Hello, World!");
+    writeln("Latest dmd version: ",
+        get("http://downloads.dlang.org/releases/LATEST"));
 }

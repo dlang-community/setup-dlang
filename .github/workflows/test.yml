@@ -21,7 +21,7 @@ jobs:
             ldc-latest,
             ldc-beta,
             ldc-master,
-            dmd-2.089.0,
+            dmd-2.097.0,
             dmd-latest,
             dmd-beta,
             dmd-master,
@@ -40,6 +40,11 @@ jobs:
       - name: Verify D compiler ($DC)
         shell: bash
         run: $DC .github/hello.d && ./hello
+
+      - name: Verify D compiler wtih explicit bitness ($DC)
+        if: ${{ env['DC'] == 'dmd' }}
+        shell: bash
+        run: $DC -m64 .github/hello.d && ./hello
 
       - name: Verify D compiler ($DC, shared)
         shell: bash

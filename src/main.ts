@@ -48,14 +48,16 @@ async function run() {
         core.addPath(binpath);
         core.exportVariable("DC", descr.name);
 
-        const libpath = cached + descr.libpath;
-        console.log("Adding '" + libpath + "' to library path");
-        if (process.platform == "win32") {
-            core.addPath(cached + descr.libpath);
-        }
-        else {
-            core.exportVariable("LD_LIBRARY_PATH", libpath);
-        }
+        descr.libpath.forEach(function(libpath) {
+            const path = cached + libpath;
+            console.log("Adding '" + path + "' to library path");
+            if (process.platform == "win32") {
+                core.addPath(path);
+            }
+            else {
+                core.exportVariable("LD_LIBRARY_PATH", path);
+            }
+        });
         console.log("Done");
     } catch (error) {
         console.log(error);
