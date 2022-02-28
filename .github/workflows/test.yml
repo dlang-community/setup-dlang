@@ -63,5 +63,5 @@ jobs:
           set -euxo pipefail
           npm ci
           npm run build
-          git diff --stat --exit-code HEAD
+          git diff --ignore-space-change --stat --exit-code HEAD
         shell: bash
