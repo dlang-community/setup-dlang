@@ -1,7 +1,5 @@
 __tests__/runner/*
 lib/
-dist/*
-!dist/index.js
 
 # Rest pulled from https://github.com/github/gitignore/blob/master/Node.gitignore
 # Logs

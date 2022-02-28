@@ -5,7 +5,7 @@
   "description": "GitHub Action for setting up a @dlang CI environment",
   "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build src/main.ts -o dist --minify --target es2017"
+    "build": "ncc build src/main.ts --source-map -o dist --minify --target es2017"
   },
   "repository": {
     "type": "git",
