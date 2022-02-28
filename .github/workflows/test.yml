@@ -63,5 +63,6 @@ jobs:
           set -euxo pipefail
           npm ci
           npm run build
-          git diff --ignore-space-change --stat --exit-code HEAD
+          # exclude dist/index.js.map (different on Windows)
+          git diff --stat --exit-code HEAD -- ':!dist/index.js.map'
         shell: bash
