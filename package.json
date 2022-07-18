@@ -1,6 +1,6 @@
 {
   "name": "setup-dlang",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": false,
   "description": "GitHub Action for setting up a @dlang CI environment",
   "main": "dist/index.js",
