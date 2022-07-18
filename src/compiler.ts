@@ -8,11 +8,12 @@ export interface CompilerDescription {
     binpath: string;
     libpath : string[];
     sig?: string;
-    download_dub?: boolean;
+    dub?: DubDescription;
 }
 
 export interface DubDescription {
     url: string;
+    version: string;
 }
 
 export async function compiler(description: string, gh_token: string): Promise<CompilerDescription> {
@@ -26,17 +27,20 @@ export async function compiler(description: string, gh_token: string): Promise<C
     }
 }
 
-export async function legacyDub(): Promise<DubDescription> {
+async function legacyDub(): Promise<DubDescription> {
     // download some dub version for legacy compilers not shipping dub
     // this is the last version on the old download page from September 2018
     switch (process.platform) {
         case "win32": return {
+            version: "1.11.0",
             url: "https://code.dlang.org/files/dub-1.11.0-windows-x86.zip"
         };
         case "linux": return {
+            version: "1.11.0",
             url: "https://code.dlang.org/files/dub-1.11.0-linux-x86_64.tar.gz"
         };
         case "darwin": return {
+            version: "1.11.0",
             url: "https://code.dlang.org/files/dub-1.11.0-osx-x86_64.tar.gz"
         };
         default:
@@ -79,7 +83,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
         : beta ? `http://downloads.dlang.org/pre-releases/2.x/${folder}/dmd.${version}`
             : `http://downloads.dlang.org/releases/2.x/${folder}/dmd.${version}`;
 
-    const download_dub = minor !== undefined && minor < 72;
+    const dub = (minor !== undefined && minor < 72) ? await legacyDub() : undefined;
 
     switch (process.platform) {
         case "win32": return {
@@ -90,7 +94,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
                     : `${base_url}.windows.7z`,
             binpath: "\\dmd2\\windows\\bin",
             libpath: [ "\\dmd2\\windows\\bin64" ],
-            download_dub: download_dub,
+            dub: dub,
             // Signatures for nightly releases are not available (yet?)
             sig: nightly ? undefined : `${base_url}.windows.7z.sig`
         };
@@ -102,7 +106,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
                     : `${base_url}.linux.tar.xz`,
             binpath: "/dmd2/linux/bin64",
             libpath: [ "/dmd2/linux/lib64" ],
-            download_dub: download_dub,
+            dub: dub,
             sig: nightly ? undefined : `${base_url}.linux.tar.xz.sig`
         };
         case "darwin": return {
@@ -113,7 +117,7 @@ async function dmd(version: string): Promise<CompilerDescription> {
                     : `${base_url}.osx.tar.xz`,
             binpath: "/dmd2/osx/bin",
             libpath: [ "/dmd2/linux/lib64" ],
-            download_dub: download_dub,
+            dub: dub,
             sig: nightly ? undefined : `${base_url}.osx.tar.xz.sig`
         };
         default:

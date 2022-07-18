@@ -3,7 +3,7 @@ import * as tc from '@actions/tool-cache';
 import { mkdirP } from '@actions/io';
 import * as gpg from './gpg';
 
-import { compiler, legacyDub } from './compiler';
+import { compiler } from './compiler';
 
 async function run() {
     try {
@@ -16,7 +16,7 @@ async function run() {
 
         console.log(`Enabling ${input}`);
 
-        const cache_tag = descr.name + "-" + descr.version + (descr.download_dub ? "+dub" : "");
+        const cache_tag = descr.name + "-" + descr.version + (descr.dub ? descr.dub.version : "");
 
         let cached = tc.find('dc', cache_tag);
 
@@ -34,10 +34,9 @@ async function run() {
             }
             const dc_path = await extract(descr.url, archive);
 
-            if (descr.download_dub) {
-                const dub = await legacyDub();
-                const archive2 = await tc.downloadTool(dub.url);
-                await extract(dub.url, archive2, dc_path + descr.binpath);
+            if (descr.dub) {
+                const archive2 = await tc.downloadTool(descr.dub.url);
+                await extract(descr.dub.url, archive2, dc_path + descr.binpath);
             }
 
             cached = await tc.cacheDir(dc_path, 'dc', cache_tag);
