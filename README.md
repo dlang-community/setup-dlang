@@ -62,3 +62,13 @@ Valid version examples are:
 - `ldc-1.18.0-beta1`
 - `dmd-master`
 - `ldc-master`
+
+## DUB installation
+
+[dub](https://github.com/dlang/dub) is installed alongside the selected compiler for any versions >= v2.072.0 (2016-10-31).
+
+If the `dub` parameter is provided to the action, this version will be the one installed instead.
+Accepted parameters are 'latest', or a DUB version string (e.g. '1.29.0').
+
+Note that DUB versions prior to v1.13.0 (DMD version v2.084.0, released 2019-01-02) do not support HTTP2,
+meaning they will not work for fetching packages.

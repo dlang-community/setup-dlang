@@ -1,6 +1,6 @@
 import * as core from '@actions/core';
 import * as tc from '@actions/tool-cache';
-import { mkdirP } from '@actions/io';
+import { rmRF } from '@actions/io';
 import * as gpg from './gpg';
 
 import { compiler } from './compiler';
@@ -12,11 +12,15 @@ async function run() {
 
         const input = core.getInput('compiler') || "dmd-latest";
         const gh_token = core.getInput('gh_token') || "";
-        const descr = await compiler(input, gh_token);
+        const dub_version = core.getInput('dub') || "";
+        const descr = await compiler(input, dub_version, gh_token);
 
-        console.log(`Enabling ${input}`);
+        if (dub_version.length)
+            console.log(`Enabling ${input} with dub ${dub_version}`);
+        else
+            console.log(`Enabling ${input}`);
 
-        const cache_tag = descr.name + "-" + descr.version + (descr.dub ? descr.dub.version : "");
+        const cache_tag = descr.name + "-" + descr.version + (descr.dub ? "+dub-" + descr.dub.version : "");
 
         let cached = tc.find('dc', cache_tag);
 
@@ -35,7 +39,18 @@ async function run() {
             const dc_path = await extract(descr.url, archive);
 
             if (descr.dub) {
+                console.log(`Downloading ${descr.dub.url}`);
                 const archive2 = await tc.downloadTool(descr.dub.url);
+                // Required on Windows, other archive tools don't mind the override
+                if (process.platform === "win32") {
+                    console.log("Removing: " + dc_path + descr.binpath + "\\dub.exe");
+                    await rmRF(dc_path + descr.binpath + "\\dub.exe");
+                    await descr.libpath.forEach(function(libpath) {
+                        const path = dc_path + libpath;
+                        console.log("Removing: " + path + "\\dub.exe");
+                        return rmRF(path + "\\dub.exe");
+                    });
+                }
                 await extract(descr.dub.url, archive2, dc_path + descr.binpath);
             }
 

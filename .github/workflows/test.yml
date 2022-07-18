@@ -66,3 +66,44 @@ jobs:
           # exclude dist/index.js.map (different on Windows)
           git diff --stat --exit-code HEAD -- ':!dist/index.js.map'
         shell: bash
+
+  dub:
+    name: Verify standalone DUB install
+    strategy:
+      fail-fast: false
+      matrix:
+        os:  [ ubuntu-latest, windows-latest, macOS-latest ]
+        dc:  [ ldc-latest, dmd-latest ]
+        dub: [ 1.19.0, 1.23.0, 1.24.0, latest ]
+        exclude:
+          # Excluded because those are actually Linux executables
+          - { os: windows-latest, dub: 1.19.0 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install D compiler
+        uses: ./
+        with:
+          compiler: ${{ matrix.dc }}
+          dub: ${{ matrix.dub }}
+
+      - name: Verify DUB version
+        shell: bash
+        run: |
+          if [[ ${{ matrix.dub }} == 'latest' ]]
+          then
+              DUB_VERSION_FOR_TEST=$(curl -s https://api.github.com/repos/dlang/dub/releases/latest | jq -r '.name | sub("v(?<v>.+)"; .v)')
+          else
+              DUB_VERSION_FOR_TEST=${{ matrix.dub }}
+          fi
+
+          echo "dub path is: `which dub`"
+          echo "dub version is: `dub --version`"
+          echo "We expect version: $DUB_VERSION_FOR_TEST"
+
+          if [[ "$(dub --version)" =~ "version $DUB_VERSION_FOR_TEST" ]]
+          then
+              echo "Match"
+          else
+             exit 1
+          fi
