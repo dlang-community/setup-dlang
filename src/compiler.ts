@@ -270,9 +270,9 @@ async function ldc(version: string, dub_vers: string, gh_token: string): Promise
         case "darwin": return {
             name: "ldc2",
             version: version,
-            url: `${base_url}-osx-x86_64.tar.xz`,
-            binpath: `/ldc2-${version}-osx-x86_64/bin`,
-            libpath: [ `/ldc2-${version}-osx-x86_64/lib64` ],
+            url: `${base_url}-osx-universal.tar.xz`,
+            binpath: `/ldc2-${version}-osx-universal/bin`,
+            libpath: [ `/ldc2-${version}-osx-universal/lib64` ],
             dub: await dub(dub_vers, gh_token, false)
         };
         default:
