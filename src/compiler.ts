@@ -267,14 +267,31 @@ async function ldc(version: string, dub_vers: string, gh_token: string): Promise
             libpath: [ `/ldc2-${version}-linux-x86_64/lib64` ],
             dub: await dub(dub_vers, gh_token, false)
         };
-        case "darwin": return {
-            name: "ldc2",
-            version: version,
-            url: `${base_url}-osx-universal.tar.xz`,
-            binpath: `/ldc2-${version}-osx-universal/bin`,
-            libpath: [ `/ldc2-${version}-osx-universal/lib-arm64`, `/ldc2-${version}-osx-universal/lib-x86_64` ],
-            dub: await dub(dub_vers, gh_token, false)
-        };
+        case "darwin":
+            var arch: string = "";
+            switch (process.arch) {
+                case "ia32":
+                case "x64": arch = "x86_64"; break;
+                case "arm":
+                case "arm64": arch = "aarch64"; break;
+            }
+            return cmpSemver(parseSimpleSemver(version),
+                [1, 30, 0, ["beta1"]]) >= 0 ?
+                {
+                    name: "ldc2",
+                    version: version,
+                    url: `${base_url}-osx-universal.tar.xz`,
+                    binpath: `/ldc2-${version}-osx-universal/bin`,
+                    libpath: [`/ldc2-${version}-osx-universal/lib-arm64`, `/ldc2-${version}-osx-universal/lib-x86_64`],
+                    dub: await dub(dub_vers, gh_token, false)
+                } : {
+                    name: "ldc2",
+                    version: version,
+                    url: `${base_url}-osx-${arch}.tar.xz`,
+                    binpath: `/ldc2-${version}-osx-${arch}/bin`,
+                    libpath: [`/ldc2-${version}-osx-${arch}/lib-arm64`, `/ldc2-${version}-osx-universal/lib`],
+                    dub: await dub(dub_vers, gh_token, false)
+                };
         default:
             throw new Error("unsupported platform: " + process.platform);
     }
