@@ -179,7 +179,7 @@ async function ldc_resolve_master(gh_token: string): Promise<CompilerDescription
     switch (process.platform) {
         case "win32": suffix = 'windows-multilib'; ext = '7z'; break;
         case "linux": suffix = 'linux-x86_64'; ext = 'tar.xz'; break;
-        case "darwin": suffix = 'osx-x86_64'; ext = 'tar.xz'; break;
+        case "darwin": suffix = 'osx-universal'; ext = 'tar.xz'; break;
         default:
             throw new Error("unsupported platform: " + process.platform);
     }
