@@ -4,6 +4,7 @@ import { rmRF } from '@actions/io';
 import * as gpg from './gpg';
 
 import { compiler } from './compiler';
+import { existsSync } from 'fs';
 
 async function run() {
     try {
@@ -62,14 +63,20 @@ async function run() {
         core.addPath(binpath);
         core.exportVariable("DC", descr.name);
 
+        let LD_LIBRARY_PATH = process.env["LD_LIBRARY_PATH"] || "";
         descr.libpath.forEach(function(libpath) {
             const path = cached + libpath;
             console.log("Adding '" + path + "' to library path");
-            if (process.platform == "win32") {
-                core.addPath(path);
-            }
-            else {
-                core.exportVariable("LD_LIBRARY_PATH", path);
+            if (existsSync(path)) {
+                if (process.platform == "win32") {
+                    core.addPath(path);
+                }
+                else {
+                    if (LD_LIBRARY_PATH.length > 0)
+                        LD_LIBRARY_PATH += ":";
+                    LD_LIBRARY_PATH += path;
+                    core.exportVariable("LD_LIBRARY_PATH", LD_LIBRARY_PATH);
+                }
             }
         });
         console.log("Done");
