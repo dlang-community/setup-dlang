@@ -272,7 +272,7 @@ async function ldc(version: string, dub_vers: string, gh_token: string): Promise
             version: version,
             url: `${base_url}-osx-universal.tar.xz`,
             binpath: `/ldc2-${version}-osx-universal/bin`,
-            libpath: [ `/ldc2-${version}-osx-universal/lib64` ],
+            libpath: [ `/ldc2-${version}-osx-universal/lib-arm64`, `/ldc2-${version}-osx-universal/lib-x86_64` ],
             dub: await dub(dub_vers, gh_token, false)
         };
         default:
