@@ -47,7 +47,7 @@ The above example test 11 possible combinations: the latest `dmd` and latest `ld
 
 Simply add the setup-dlang action to your GitHub Actions workflow to automatically download and install a D compiler and package manager bundled with the compiler or separately downloaded. The action will automatically add the D binaries to the `PATH` environment variable and set the `DC` environment variable to the selected compiler executable name.
 
-All DMD versions of releases and pre-releases on http://downloads.dlang.org/releases/2.x/ and http://downloads.dlang.org/pre-releases/2.x/ are supported. For LDC all releases on https://github.com/ldc-developers/ldc/releases are available.
+All DMD versions of releases and pre-releases on https://downloads.dlang.org/releases/2.x/ and https://downloads.dlang.org/pre-releases/2.x/ are supported. For LDC all releases on https://github.com/ldc-developers/ldc/releases are available.
 
 Additionally instead of a version for both DMD and LDC you can specify `-latest` to get the latest stable release of the compiler, use `-beta` to get the latest pre-release of the compiler and also use `-master` to get the newest nightly builds.
 
