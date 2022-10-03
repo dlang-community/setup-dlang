@@ -101,10 +101,10 @@ async function dmd(version: string, dub_vers: string, gh_token: string): Promise
 
     switch (version) {
         case "latest":
-            version = await body_as_text("http://downloads.dlang.org/releases/LATEST");
+            version = await body_as_text("https://downloads.dlang.org/releases/LATEST");
             break;
         case "beta":
-            version = await body_as_text("http://downloads.dlang.org/pre-releases/LATEST");
+            version = await body_as_text("https://downloads.dlang.org/pre-releases/LATEST");
             beta = true;
             break;
     }
@@ -128,8 +128,8 @@ async function dmd(version: string, dub_vers: string, gh_token: string): Promise
 
     const base_url = nightly ?
         `https://github.com/dlang/dmd/releases/download/nightly/dmd.${version}`
-        : beta ? `http://downloads.dlang.org/pre-releases/2.x/${folder}/dmd.${version}`
-            : `http://downloads.dlang.org/releases/2.x/${folder}/dmd.${version}`;
+        : beta ? `https://downloads.dlang.org/pre-releases/2.x/${folder}/dmd.${version}`
+            : `https://downloads.dlang.org/releases/2.x/${folder}/dmd.${version}`;
 
     const legacy = (minor !== undefined && minor < 72);
 
