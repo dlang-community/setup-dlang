@@ -53,10 +53,10 @@ jobs:
       - name: Verify D compiler (dub)
         run: dub run --single -q .github/hello.d
 
-      - name: Install Node.js 12.x
+      - name: Install Node.js 16.x
         uses: actions/setup-node@v1
         with:
-          node-version: '12.x'
+          node-version: 16
 
       - name: Ensure `dist/index.js` is up to date
         run: |
