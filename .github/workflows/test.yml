@@ -28,6 +28,23 @@ jobs:
             dmd-master,
             "",
           ]
+        include:
+          - os: macOS-latest
+            arch: arm64
+            dc: ""
+          - os: macos-latest
+            arch: arm64
+            dc: ldc-1.30.0
+          - os: macOS-latest
+            arch: arm64
+            dc: ldc-latest
+          - os: macOS-latest
+            arch: arm64
+            dc: ldc-beta
+          - os: macOS-latest
+            arch: arm64
+            dc: ldc-master
+
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@master
