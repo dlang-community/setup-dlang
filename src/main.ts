@@ -8,10 +8,14 @@ import { existsSync } from 'fs';
 
 async function run() {
     try {
-        if (process.arch != "x64")
-            throw new Error("Only x64 arch is supported by all platforms");
+        let default_compiler = "dmd-latest";
+        if (process.arch != "x64") {
+            default_compiler = "ldc-latest";
+        }
+        const input = core.getInput('compiler') || default_compiler;
+        if (process.arch != "x64" && input.startsWith("dmd"))
+            throw new Error("The dmd compiler is not supported for non-x64 architecture");
 
-        const input = core.getInput('compiler') || "dmd-latest";
         const gh_token = core.getInput('gh_token') || "";
         const dub_version = core.getInput('dub') || "";
         const descr = await compiler(input, dub_version, gh_token);
