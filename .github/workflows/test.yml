@@ -21,7 +21,8 @@ jobs:
             ldc-latest,
             ldc-beta,
             ldc-master,
-            dmd-2.097.0,
+            # Need fix for https://issues.dlang.org/show_bug.cgi?id=22942 for macOS
+            dmd-2.099.1,
             dmd-latest,
             dmd-beta,
             dmd-master,
@@ -74,7 +75,7 @@ jobs:
       matrix:
         os:  [ ubuntu-latest, windows-latest, macOS-latest ]
         dc:  [ ldc-latest, dmd-latest ]
-        dub: [ 1.19.0, 1.23.0, 1.24.0, latest ]
+        dub: [ 1.19.0, 1.23.0, 1.24.0 ]
         exclude:
           # Excluded because those are actually Linux executables
           - { os: windows-latest, dub: 1.19.0 }
