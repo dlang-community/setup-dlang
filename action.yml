@@ -4,7 +4,7 @@ author: "Mihails Strasuns"
 inputs:
   compiler:
     description: "Compiler version string, for example 'dmd-latest' or 'ldc-1.20.1'"
-    default: "dmd-latest"
+    default: "auto"
   dub:
     description: "DUB version string, for example 'latest' or '1.29.0'"
     required: false

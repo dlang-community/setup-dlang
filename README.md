@@ -10,7 +10,7 @@ steps:
   - uses: actions/checkout@v2
   - uses: dlang-community/setup-dlang@v1
     with:
-      compiler: dmd-latest
+      compiler: auto # dmd-latest, ldc-latest, ...
   - name: Run tests
     run: dub test
 ```
@@ -50,6 +50,8 @@ Simply add the setup-dlang action to your GitHub Actions workflow to automatical
 All DMD versions of releases and pre-releases on https://downloads.dlang.org/releases/2.x/ and https://downloads.dlang.org/pre-releases/2.x/ are supported. For LDC all releases on https://github.com/ldc-developers/ldc/releases are available.
 
 Additionally instead of a version for both DMD and LDC you can specify `-latest` to get the latest stable release of the compiler, use `-beta` to get the latest pre-release of the compiler and also use `-master` to get the newest nightly builds.
+
+When no compiler is specified, or when it is set to `auto`, `dmd-latest` will be picked, unless it's running on a non-x86 platform (e.g. ARM), then `ldc-latest` will be picked.
 
 Valid version examples are:
 - `dmd-latest`

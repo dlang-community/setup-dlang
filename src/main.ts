@@ -12,7 +12,8 @@ async function run() {
         if (process.arch != "x64") {
             default_compiler = "ldc-latest";
         }
-        const input = core.getInput('compiler') || default_compiler;
+        let input = core.getInput('compiler') || 'auto';
+        if (input === 'auto') input = default_compiler;
         if (process.arch != "x64" && input.startsWith("dmd"))
             throw new Error("The dmd compiler is not supported for non-x64 architecture");
 
