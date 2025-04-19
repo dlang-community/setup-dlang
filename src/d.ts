@@ -100,7 +100,7 @@ export class Compiler implements ITool {
 	    console.log("Using cache")
 	} else {
             console.log(`Downloading ${this.url}`);
-            const archive = await tc.downloadTool(this.url);
+        const archive = await utils.downloadTool(this.url)
             if (this.sig) {
                 console.log("Verifying the download with GPG");
                 await gpg.verify(archive, this.sig);
@@ -744,7 +744,7 @@ export class Dub implements ITool {
     private async getCached(): Promise<string> {
 	let cached = await tc.find(this.name, this.version)
 	if (!cached) {
-	    let archive = await tc.downloadTool(this.url)
+	    const archive = await utils.downloadTool(this.url)
 	    let extracted = await utils.extract(this.url, archive)
 	    cached = await tc.cacheFile(extracted + sep + this.exeName,
 					this.exeName, this.name, this.version)
