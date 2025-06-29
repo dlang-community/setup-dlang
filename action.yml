@@ -15,6 +15,11 @@ inputs:
   gdmd_sha:
     description: "Commit sha in https://github.com/D-Programming-GDC/gdmd, used only by the gdmd compiler"
     default: 'latest'
+  verify_sig:
+    description: "Verify downloaded artifacts, if a signature file is present"
+    default: true
+    required: false
+    type: boolean
 runs:
   using: "node20"
   main: "dist/index.js"

@@ -119,6 +119,21 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/verify-d-compiler
 
+  verify-sig:
+    needs: verify-index-js-up-to-date
+    name: Check verify_sig input
+    strategy:
+      max-parallel: 5
+      fail-fast: false
+      matrix:
+        verify_sig: [ true, false ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/verify-d-compiler
+        with:
+          verify_sig: ${{ matrix.verify_sig }}
+
   dub:
     name: Verify standalone DUB install
     needs: verify-index-js-up-to-date
