@@ -85,7 +85,7 @@ jobs:
 ```
 
 
-Simply add the setup-dlang action to your GitHub Actions workflow to automatically download and install a D compiler and package manager bundled with the compiler or separately downloaded. The action will automatically add the D binaries to the `PATH` environment variable and set the `DC` and `DMD` environment variables to point to the to the selected compiler and to the dmd wrapper (`gdmd`, `ldmd2`, or `dmd`) of the compiler respectively.
+Simply add the setup-dlang action to your GitHub Actions workflow to automatically download and install a D compiler and package manager bundled with the compiler or separately downloaded. The action will automatically add the D binaries to the `PATH` environment variable and set the `DC` and `DMD` environment variables to point to the selected compiler and to the dmd wrapper (`gdmd`, `ldmd2`, or `dmd`) of the compiler respectively.
 Note, this behavior has been slightly adjusted in v2.
 For more details check the changes below.
 
