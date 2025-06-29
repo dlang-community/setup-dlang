@@ -1,4 +1,5 @@
-import { DMD } from '../src/d'
+import { DMD, SETTINGS } from '../src/d'
+import * as gpg from '../src/gpg'
 import * as utils from '../src/utils'
 import * as testUtils from './test-helpers.test'
 import * as tc from '@actions/tool-cache'
@@ -494,5 +495,32 @@ describe('Test makeAvailable', () => {
 
 	expect(process.env['DC']).toBe(root + `\\dmd2\\windows\\bin64${sep}dmd${exeExt}`)
 	expect(process.env['DMD']).toBe(root + `\\dmd2\\windows\\bin64${sep}dmd${exeExt}`)
+    })
+
+    describe('Check that verify_sig is respected', () => {
+        const save = SETTINGS.verify_sig
+        const gpgSpy = jest.spyOn(gpg, 'verify').mockResolvedValue(undefined)
+
+        beforeEach(() => {
+            jest.spyOn(tc, 'find').mockReturnValue(false)
+            jest.spyOn(utils, 'downloadTool').mockResolvedValue('/tmp/p1')
+            jest.spyOn(utils, 'extract').mockResolvedValue('/tmp/p2')
+            jest.spyOn(tc, 'cacheDir').mockResolvedValue('/tmp/p3')
+        })
+        afterEach(() => SETTINGS.verify_sig = save)
+
+        test('verify_sig === false', async () => {
+            SETTINGS.verify_sig = false
+            const dmd = await init('dmd-2.109.1')
+            await dmd.makeAvailable()
+            expect(gpgSpy).not.toHaveBeenCalled()
+        })
+
+        test('verify_sig === true', async () => {
+            SETTINGS.verify_sig = true
+            const dmd = await init('dmd-2.109.1')
+            await dmd.makeAvailable()
+            expect(gpgSpy).toHaveBeenCalled()
+        })
     })
 })

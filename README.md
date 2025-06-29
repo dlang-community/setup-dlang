@@ -108,6 +108,8 @@ Examples:
     # Install gdmd from https://github.com/D-Programming-GDC/gdmd/blob/0a64b92ec5ad1177988496df4f3ca47c47580501/dmd-script
     # instead of the master branch
     gdmd_sha: '0a64b92ec5ad1177988496df4f3ca47c47580501'
+    # turn off gpg verification (only dmd archives currently undergo this verification)
+    verify_sig: false
 ```
 
 ### compiler
@@ -184,6 +186,12 @@ Take as an example that upstream may rename the development branch to `main` or 
 
 The default value for this input is `latest` and it is required when using GDC.
 
+### verify_sig
+
+Use this boolean to disable gpg verification of downloaded artifacts. Currently, only dmd releases from https://download.dlang.org have a signature file.
+
+The default value is `true`.
+
 ## Compiler support
 
 ### DMD
@@ -259,3 +267,5 @@ This means that one no longer needs to set `NODE_OPTIONS=--openssl-legacy-provid
 
 Added unittests.
 To run them use `npm test`.
+
+Added the `verify_sig` option. It can be used to disable the gpg verification of the downloaded dmd archives. The option is meant to be used in edge-case scenarios when the [d-keyring](https://github.com/dlang/dlang.org/blob/master/d-keyring.gpg) is not updated alongside the dmd releases (#87). Requested in #90.

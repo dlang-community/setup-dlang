@@ -9,6 +9,10 @@ import * as exec from '@actions/exec'
 const sep = (process.platform == 'win32' ? '\\' : '/')
 const exeExt = (process.platform == 'win32' ? '.exe' : '')
 
+export const SETTINGS = {
+    verify_sig: core.getInput('verify_sig') !== 'false'
+}
+
 /** Base interface for all D tools */
 export interface ITool {
     makeAvailable(): Promise<void>
@@ -101,7 +105,7 @@ export class Compiler implements ITool {
 	} else {
             console.log(`Downloading ${this.url}`);
         const archive = await utils.downloadTool(this.url)
-            if (this.sig) {
+            if (SETTINGS.verify_sig && this.sig) {
                 console.log("Verifying the download with GPG");
                 await gpg.verify(archive, this.sig);
             }

@@ -12,6 +12,10 @@ inputs:
   gdmd_sha:
     descript: "Commit in D-programming-gdc/gdmd"
     default: 'latest'
+  verify_sig:
+    description: "Use .sig file to verify downloaded archives"
+    type: boolean
+    default: true
 runs:
   using: "composite"
   steps:
@@ -21,6 +25,7 @@ runs:
         compiler: ${{ inputs.dc }}
         gh_token: ${{ inputs.gh_token }}
         gdmd_sha: ${{ inputs.gdmd_sha }}
+        verify_sig: ${{ inputs.verify_sig }}
 
     - name: Verify D compiler ($DC)
       shell: bash
