@@ -13,7 +13,14 @@ export function getActionInputs() {
     }
     const d_compiler = core.getInput('compiler') || default_compiler;
     const gh_token = core.getInput('gh_token') || "";
-    const dub_version = core.getInput('dub') || "";
+    let dub_version = core.getInput('dub')
+    if (dub_version == 'any') {
+        if (d_compiler.startsWith('gdc'))
+            dub_version = 'latest'
+        else
+            dub_version = ''
+    }
+
     const gdmd_sha = core.getInput('gdmd_sha') || ""
 
     return { d_compiler, gh_token, dub_version, gdmd_sha };

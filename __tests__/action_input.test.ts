@@ -132,7 +132,7 @@ describe('Action messages', () => {
 	for (var comp of [ 'dmd', 'ldc-11.3.0', 'gdc-12' ]) {
 	    mockInputs(comp)
 	    await main.run()
-	    expect(nopTool.makeAvailable).toHaveBeenCalledTimes(1)
+	    expect(nopTool.makeAvailable).toHaveBeenCalled()
 	    expect(consoleSpy).toHaveBeenCalledTimes(2)
 	    nopTool.makeAvailable.mockClear()
 	    consoleSpy.mockClear()
@@ -148,5 +148,38 @@ describe('Action messages', () => {
 	await main.run()
 	expect(consoleSpy).toHaveBeenCalledTimes(1)
 	expect(consoleSpy.mock.calls[0][0]).toMatch(msg)
+    })
+})
+
+describe('dub default input', () => {
+    function mockCompiler(compiler: string) {
+        jest.spyOn(core, 'getInput').mockImplementation((key) => {
+            switch (key) {
+                case 'compiler':
+                    return compiler
+                case 'dub':
+                    return 'any'
+                default:
+                    return ''
+            }
+        })
+    }
+
+    test('with gdc dub is latest', () => {
+        mockCompiler('gdc-14')
+        const got = main.getActionInputs()
+        expect(got.dub_version).toBe('latest')
+    })
+
+    test('with dmd dub is empty', async () => {
+        mockCompiler('dmd')
+        const got = main.getActionInputs()
+        expect(got.dub_version).toBe('')
+    })
+
+    test('without a compiler specified dub is empty', async () => {
+        mockCompiler('')
+        const got = main.getActionInputs()
+        expect(got.dub_version).toBe('')
     })
 })
