@@ -75,9 +75,6 @@ jobs:
         uses: dlang-community/setup-dlang@v2
         with:
           compiler: ${{ matrix.dc }}
-          # dub doesn't come with gdc.
-          # You wouldn't need the line below if only using dmd or ldc
-          dub: latest
 
       - name: Run tests
         shell: bash
@@ -103,8 +100,6 @@ Examples:
 - uses: dlang-community/setup-dlang@v2
   with:
     compiler: gdc-12
-    # dub doesn't come with gdc
-    dub: latest
     # Install gdmd from https://github.com/D-Programming-GDC/gdmd/blob/0a64b92ec5ad1177988496df4f3ca47c47580501/dmd-script
     # instead of the master branch
     gdmd_sha: '0a64b92ec5ad1177988496df4f3ca47c47580501'
@@ -162,12 +157,17 @@ The compilers are already configured to embed this path themselves so you really
 
 ### dub
 
-If you need a specific version of dub or if the D compiler doesn't come with one (`gdc`) you can explicitly install one.
+You can select the specific version of dub that gets installed, or if it gets installed.
 
-You can specify this version as:
+You can specify the version as:
 - `latest` - install the latest version from https://github.com/dlang/dub/releases.
   This may require an api token.
 - `1.24.0` - install https://github.com/dlang/dub/releases/tag/v1.24.0
+- `any` - use either the `dub` that comes with the compiler or install `latest`
+
+The default value is `any`.
+You can disable installing an additional `dub` by passing an empty string.
+Note that this does not affect the `dub` executable that comes packaged with `dmd` and `ldc2`.
 
 ### gh_token
 
@@ -210,7 +210,7 @@ Like dmd, ldc releases come with programs like `rdmd` and `dub`.
 
 Gdc is currently only available on linux.
 The exact versions available are those in the ubuntu repos.
-Note that gdc won't come by default with any extra programs like `rdmd` or `dub` so you would need to install them separately or install another compiler that comes with them.
+Note that gdc won't come by default with extra programs like `rdmd` so you would need to install them separately or install another compiler that comes with them.
 You can do that with:
 
 ```yml
@@ -229,7 +229,7 @@ You can do that with:
 
 ## DUB support
 
-[dub](https://github.com/dlang/dub) is installed alongside the selected compiler for any versions of dmd and ldc higher than v2.072.0 (2016-10-31).
+[dub](https://github.com/dlang/dub) is installed alongside the selected compiler for any versions of dmd and ldc higher than v2.072.0 (2016-10-31) and any version of gdc.
 
 If the `dub` parameter is provided to the action, that version will be the one installed instead.
 
@@ -269,3 +269,10 @@ Added unittests.
 To run them use `npm test`.
 
 Added the `verify_sig` option. It can be used to disable the gpg verification of the downloaded dmd archives. The option is meant to be used in edge-case scenarios when the [d-keyring](https://github.com/dlang/dlang.org/blob/master/d-keyring.gpg) is not updated alongside the dmd releases (#87). Requested in #90.
+
+Added the `dub: "any"` input
+This is a special value that means:
+1. if the compiler is `dmd` or `ldc`, don't install `dub`, use the executable that comes with the compiler
+2. if the compiler is `gdc`, install latest `dub`
+
+This has become the default value because most D projects use `dub` to build and it is a hindrance to manually specify it just because `gdc` doesn't come with it.

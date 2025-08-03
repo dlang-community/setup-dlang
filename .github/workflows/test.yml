@@ -105,6 +105,9 @@ jobs:
         with:
           dc: ${{ matrix.dc }}
           gdmd_sha: ${{ matrix.gdmd_sha }}
+      - name: Test that dub is installed by default
+        run: |
+          cd .github && dub run --single hello.d
 
   verify-default:
     needs: verify-index-js-up-to-date
@@ -142,7 +145,7 @@ jobs:
       matrix:
         os:  [ ubuntu-latest, windows-latest, macos-latest, macOS-13 ]
         dc:  [ ldc-latest, dmd-latest, gdc, gdc-12 ]
-        dub: [ 1.19.0, 1.23.0, latest ]
+        dub: [ 1.19.0, any, latest ]
         exclude:
           # Excluded because those are actually Linux executables
           - { os: windows-latest, dub: 1.19.0 }
@@ -163,6 +166,7 @@ jobs:
           dub: ${{ matrix.dub }}
 
       - name: Verify DUB version
+        if: matrix.dub != 'any'
         run: |
           if [[ ${{ matrix.dub }} == 'latest' ]]
           then
