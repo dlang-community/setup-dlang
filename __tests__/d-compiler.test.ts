@@ -1,12 +1,22 @@
 import { Compiler } from '../src/d'
 import fs from 'fs'
+import SETTINGS from '../src/settings'
 
 describe('Test Compiler class', () => {
     const logSpy = jest.spyOn(console, 'log').mockReturnValue(undefined)
     jest.spyOn(process.stdout, 'write').mockReturnValue(true)
 
-    let originalEnv = process.env
-    afterEach(() => process.env = originalEnv)
+    const originalEnv = process.env
+    const originalSep = SETTINGS.sep
+    const originalExeExt = SETTINGS.exeExt
+    // This value is cached so it matches the host's
+    const pathSep = (process.platform == 'win32' ? ';' : ':')
+
+    afterEach(() => {
+        process.env = originalEnv
+        SETTINGS.sep = originalSep
+        SETTINGS.exeExt = originalExeExt
+    })
 
     beforeEach(() => logSpy.mockClear())
 
@@ -16,13 +26,6 @@ describe('Test Compiler class', () => {
     const dmdWrapper = 'dmd_wrapper'
     let c = new Compiler('url', undefined, name, 'ver', bin, libs, dmdWrapper)
     const root = '/root/folder'
-
-    // The values are computed when d.ts is imported so
-    // they will have the values of the host system, even
-    // if process.platform is modified in the tests.
-    const sep = process.platform == 'win32' ? '\\' : '/'
-    const extension = process.platform == 'win32' ? '.exe' : ''
-    const pathSep = (process.platform == 'win32' ? ';' : ':')
 
     test('Test setting PATH', () => {
 	process.env['PATH']='/bin'
@@ -88,6 +91,8 @@ describe('Test Compiler class', () => {
     test('Test makeAvailable', async () => {
 	jest.spyOn(c, 'getCached').mockResolvedValue(root)
 
+        SETTINGS.sep = '/'
+        SETTINGS.exeExt = ''
 	for (const platform of [ 'linux', 'darwin', 'freebsd' ]) {
 	    Object.defineProperty(process, 'platform', { value: platform })
 	    jest.spyOn(fs, 'existsSync').mockReturnValue(true).
@@ -99,11 +104,13 @@ describe('Test Compiler class', () => {
 
 	    expect(process.env['PATH']).toBe(root + bin + pathSep + '/bin')
 	    expect(process.env['LD_LIBRARY_PATH']).toBe(root + libs[1])
-	    expect(process.env['DC']).toBe(`${root}${bin}${sep}${name}${extension}`)
-	    expect(process.env['DMD']).toBe(`${root}${bin}${sep}${dmdWrapper}${extension}`)
+        expect(process.env['DC']).toBe(`${root}${bin}/${name}`)
+        expect(process.env['DMD']).toBe(`${root}${bin}/${dmdWrapper}`)
 	}
 
 
+        SETTINGS.sep = '\\'
+        SETTINGS.exeExt = '.exe'
 	Object.defineProperty(process, 'platform', { value: 'win32' })
 	jest.spyOn(fs, 'existsSync').mockReturnValue(true)
 
@@ -113,16 +120,18 @@ describe('Test Compiler class', () => {
 	const expPath = `${root}${libs[1]}${pathSep}` + `${root}${libs[0]}${pathSep}` +
 	    `${root}${bin}${pathSep}` + '\\bin'
 	expect(process.env['PATH']).toBe(expPath)
-	expect(process.env['DC']).toBe(`${root}${bin}${sep}${name}${extension}`)
-	expect(process.env['DMD']).toBe(`${root}${bin}${sep}${dmdWrapper}${extension}`)
+        expect(process.env['DC']).toBe(`${root}${bin}\\${name}.exe`)
+        expect(process.env['DMD']).toBe(`${root}${bin}\\${dmdWrapper}.exe`)
     })
 
     test('DC and DMD get set to the absolute path of the compiler', () => {
 	for (const platform of [ 'linux', 'win32', 'darwin', 'freebsd' ]) {
+        const sep = SETTINGS.sep = '/'
+        const exeExt = SETTINGS.exeExt = ''
 	    Object.defineProperty(process, 'platform', { value: platform })
 	    c.setDC(root)
-	    expect(process.env['DC']).toBe(root + bin + sep + name + extension)
-	    expect(process.env['DMD']).toBe(root + bin + sep + dmdWrapper + extension)
+        expect(process.env['DC']).toBe(root + bin + sep + name + exeExt)
+        expect(process.env['DMD']).toBe(root + bin + sep + dmdWrapper + exeExt)
 	}
     })
 })

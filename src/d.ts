@@ -6,12 +6,7 @@ import * as fs from 'fs';
 import * as semver from './semver'
 import * as exec from '@actions/exec'
 
-const sep = (process.platform == 'win32' ? '\\' : '/')
-const exeExt = (process.platform == 'win32' ? '.exe' : '')
-
-export const SETTINGS = {
-    verify_sig: core.getInput('verify_sig') !== 'false'
-}
+import SETTINGS from './settings'
 
 /** Base interface for all D tools */
 export interface ITool {
@@ -105,7 +100,7 @@ export class Compiler implements ITool {
 	} else {
             console.log(`Downloading ${this.url}`);
         const archive = await utils.downloadTool(this.url)
-            if (SETTINGS.verify_sig && this.sig) {
+            if (SETTINGS.verifySig && this.sig) {
                 console.log("Verifying the download with GPG");
                 await gpg.verify(archive, this.sig);
             }
@@ -118,8 +113,8 @@ export class Compiler implements ITool {
 
     /** Set the DC and DMD environment variable to point to the newly extracted compiler */
     setDC(root: string) {
-	core.exportVariable("DC", root + this.binPath + sep + this.name + exeExt)
-	core.exportVariable("DMD", root + this.binPath + sep + this.dmdWrapperExeName + exeExt)
+        core.exportVariable("DC", root + this.binPath + SETTINGS.sep + this.name + SETTINGS.exeExt)
+        core.exportVariable("DMD", root + this.binPath + SETTINGS.sep + this.dmdWrapperExeName + SETTINGS.exeExt)
     }
 
     /** Take all the necessary steps to make the compiler available on the host
@@ -675,7 +670,7 @@ export class LDC extends Compiler {
 
 export class Dub implements ITool {
     public readonly name = 'dub'
-    public readonly exeName = this.name + exeExt
+    public readonly exeName = this.name + SETTINGS.exeExt
     constructor(public url: string, public version: string) {}
 
     /** Parse a version string and compute the associated version
@@ -750,7 +745,7 @@ export class Dub implements ITool {
 	if (!cached) {
 	    const archive = await utils.downloadTool(this.url)
 	    let extracted = await utils.extract(this.url, archive)
-	    cached = await tc.cacheFile(extracted + sep + this.exeName,
+        cached = await tc.cacheFile(extracted + SETTINGS.sep + this.exeName,
 					this.exeName, this.name, this.version)
 	}
 	return cached
