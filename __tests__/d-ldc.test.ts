@@ -3,6 +3,7 @@ import * as utils from '../src/utils'
 import * as testUtils from './test-helpers.test'
 import * as tc from '@actions/tool-cache'
 import fs from 'fs'
+import SETTINGS from '../src/settings'
 
 testUtils.saveProcessRestorePoint()
 testUtils.disableNetwork()
@@ -460,10 +461,10 @@ test('ldc fails on unsupported platforms', async () => {
 describe('Test makeAvailable', () => {
     const root = '/tmp/cache'
     const origEnv = process.env
+    const origSep = SETTINGS.sep
+    const origExeExt = SETTINGS.exeExt
 
-    // These values are cached so they match the hosts
-    const sep = (process.platform == 'win32' ? '\\' : '/')
-    const exeExt = (process.platform == 'win32' ? '.exe' : '')
+    // This value is cached so it matches the host's
     const pathSep = (process.platform == 'win32' ? ';' : ':')
 
     beforeEach(() => {
@@ -473,34 +474,44 @@ describe('Test makeAvailable', () => {
 	process.env['PATH'] = '/bin'
 	process.env['LD_LIBRARY_PATH'] = ''
     })
-    afterEach(() => process.env = origEnv)
+    afterEach(() => {
+        process.env = origEnv
+        SETTINGS.sep = origSep
+        SETTINGS.exeExt = origExeExt
+    })
 
     test('linux', async () => {
 	Object.defineProperty(process, 'platform', { value: 'linux' })
+        SETTINGS.sep = '/'
+        SETTINGS.exeExt = ''
 	const ldc = await init('ldc-1.39.0')
 	await ldc.makeAvailable()
 	expect(process.env['PATH']).toBe(root + '/ldc2-1.39.0-linux-x86_64/bin' + pathSep + '/bin')
 	expect(process.env['LD_LIBRARY_PATH']).toBe(root + '/ldc2-1.39.0-linux-x86_64/lib')
-	expect(process.env['DC']).toBe(root + `/ldc2-1.39.0-linux-x86_64/bin${sep}ldc2${exeExt}`)
-	expect(process.env['DMD']).toBe(root + `/ldc2-1.39.0-linux-x86_64/bin${sep}ldmd2${exeExt}`)
+        expect(process.env['DC']).toBe(root + '/ldc2-1.39.0-linux-x86_64/bin/ldc2')
+        expect(process.env['DMD']).toBe(root + '/ldc2-1.39.0-linux-x86_64/bin/ldmd2')
     })
 
     test('osx', async () => {
 	Object.defineProperty(process, 'platform', { value: 'darwin' })
+        SETTINGS.sep = '/'
+        SETTINGS.exeExt = ''
 	const ldc = await init('ldc-1.39.0')
 	await ldc.makeAvailable()
 	expect(process.env['PATH']).toBe(root + '/ldc2-1.39.0-osx-universal/bin' + pathSep + '/bin')
 	expect(process.env['LD_LIBRARY_PATH']).toBe(root + '/ldc2-1.39.0-osx-universal/lib-x86_64' + ':' + root + '/ldc2-1.39.0-osx-universal/lib-arm64')
-	expect(process.env['DC']).toBe(root + `/ldc2-1.39.0-osx-universal/bin${sep}ldc2${exeExt}`)
-	expect(process.env['DMD']).toBe(root + `/ldc2-1.39.0-osx-universal/bin${sep}ldmd2${exeExt}`)
+        expect(process.env['DC']).toBe(root + '/ldc2-1.39.0-osx-universal/bin/ldc2')
+        expect(process.env['DMD']).toBe(root + '/ldc2-1.39.0-osx-universal/bin/ldmd2')
     })
 
     test('windows', async () => {
 	Object.defineProperty(process, 'platform', { value: 'win32' })
+        SETTINGS.sep = '\\'
+        SETTINGS.exeExt = '.exe'
 	const ldc = await init('ldc-1.39.0')
 	await ldc.makeAvailable()
 	expect(process.env['PATH']).toBe(root + '\\ldc2-1.39.0-windows-multilib\\lib64' + pathSep + root + '\\ldc2-1.39.0-windows-multilib\\bin' + pathSep + '/bin')
-	expect(process.env['DC']).toBe(root + `\\ldc2-1.39.0-windows-multilib\\bin${sep}ldc2${exeExt}`)
-	expect(process.env['DMD']).toBe(root + `\\ldc2-1.39.0-windows-multilib\\bin${sep}ldmd2${exeExt}`)
+        expect(process.env['DC']).toBe(root + '\\ldc2-1.39.0-windows-multilib\\bin\\ldc2.exe')
+        expect(process.env['DMD']).toBe(root + '\\ldc2-1.39.0-windows-multilib\\bin\\ldmd2.exe')
     })
 })

@@ -1,9 +1,11 @@
-import { DMD, SETTINGS } from '../src/d'
+import { DMD } from '../src/d'
 import * as gpg from '../src/gpg'
 import * as utils from '../src/utils'
 import * as testUtils from './test-helpers.test'
 import * as tc from '@actions/tool-cache'
 import fs from 'fs'
+
+import SETTINGS from '../src/settings'
 
 testUtils.hideConsoleLogs()
 testUtils.saveProcessRestorePoint()
@@ -442,10 +444,10 @@ test('dmd fails on unsupported platforms', async () => {
 describe('Test makeAvailable', () => {
     const root = '/tmp/cache'
     const origEnv = process.env
+    const origSep = SETTINGS.sep
+    const origExeExt = SETTINGS.exeExt
 
-    // These values are cached so they match the hosts
-    const sep = (process.platform == 'win32' ? '\\' : '/')
-    const exeExt = (process.platform == 'win32' ? '.exe' : '')
+    // This value is cached so it matches the host's
     const pathSep = (process.platform == 'win32' ? ';' : ':')
 
     beforeEach(() => {
@@ -455,30 +457,40 @@ describe('Test makeAvailable', () => {
 	process.env['PATH'] = '/bin'
 	process.env['LD_LIBRARY_PATH'] = ''
     })
-    afterEach(() => process.env = origEnv)
+    afterEach(() => {
+        process.env = origEnv
+        SETTINGS.sep = origSep
+        SETTINGS.exeExt = origExeExt
+    })
 
     test('linux', async () => {
 	Object.defineProperty(process, 'platform', { value: 'linux' })
+        SETTINGS.sep = '/'
+        SETTINGS.exeExt = ''
 	const dmd = await init('dmd-2.109.1')
 	await dmd.makeAvailable()
 	expect(process.env['PATH']).toBe(root + '/dmd2/linux/bin64' + pathSep + '/bin')
 	expect(process.env['LD_LIBRARY_PATH']).toBe(root + '/dmd2/linux/lib64')
-	expect(process.env['DC']).toBe(root + `/dmd2/linux/bin64${sep}dmd${exeExt}`)
-	expect(process.env['DMD']).toBe(root + `/dmd2/linux/bin64${sep}dmd${exeExt}`)
+        expect(process.env['DC']).toBe(root + '/dmd2/linux/bin64/dmd')
+        expect(process.env['DMD']).toBe(root + '/dmd2/linux/bin64/dmd')
     })
 
     test('osx', async () => {
 	Object.defineProperty(process, 'platform', { value: 'darwin' })
+        SETTINGS.sep = '/'
+        SETTINGS.exeExt = ''
 	const dmd = await init('dmd-2.109.1')
 	await dmd.makeAvailable()
 	expect(process.env['PATH']).toBe(root + '/dmd2/osx/bin' + pathSep + '/bin')
 	expect(process.env['LD_LIBRARY_PATH']).toBe(root + '/dmd2/osx/lib')
-	expect(process.env['DC']).toBe(root + `/dmd2/osx/bin${sep}dmd${exeExt}`)
-	expect(process.env['DMD']).toBe(root + `/dmd2/osx/bin${sep}dmd${exeExt}`)
+        expect(process.env['DC']).toBe(root + '/dmd2/osx/bin/dmd')
+        expect(process.env['DMD']).toBe(root + '/dmd2/osx/bin/dmd')
     })
 
     test('windows', async () => {
 	Object.defineProperty(process, 'platform', { value: 'win32' })
+        SETTINGS.sep = '\\'
+        SETTINGS.exeExt = '.exe'
 	const dmd = await init('dmd-2.109.1')
 	await dmd.makeAvailable()
 
@@ -493,12 +505,12 @@ describe('Test makeAvailable', () => {
 	// Check that the 64bit folder appears before the 32bit one
 	expect(found64).toBeLessThan(found32)
 
-	expect(process.env['DC']).toBe(root + `\\dmd2\\windows\\bin64${sep}dmd${exeExt}`)
-	expect(process.env['DMD']).toBe(root + `\\dmd2\\windows\\bin64${sep}dmd${exeExt}`)
+        expect(process.env['DC']).toBe(root + `\\dmd2\\windows\\bin64\\dmd.exe`)
+        expect(process.env['DMD']).toBe(root + `\\dmd2\\windows\\bin64\\dmd.exe`)
     })
 
     describe('Check that verify_sig is respected', () => {
-        const save = SETTINGS.verify_sig
+        const save = SETTINGS.verifySig
         const gpgSpy = jest.spyOn(gpg, 'verify').mockResolvedValue(undefined)
 
         beforeEach(() => {
@@ -507,17 +519,17 @@ describe('Test makeAvailable', () => {
             jest.spyOn(utils, 'extract').mockResolvedValue('/tmp/p2')
             jest.spyOn(tc, 'cacheDir').mockResolvedValue('/tmp/p3')
         })
-        afterEach(() => SETTINGS.verify_sig = save)
+        afterEach(() => SETTINGS.verifySig = save)
 
         test('verify_sig === false', async () => {
-            SETTINGS.verify_sig = false
+            SETTINGS.verifySig = false
             const dmd = await init('dmd-2.109.1')
             await dmd.makeAvailable()
             expect(gpgSpy).not.toHaveBeenCalled()
         })
 
         test('verify_sig === true', async () => {
-            SETTINGS.verify_sig = true
+            SETTINGS.verifySig = true
             const dmd = await init('dmd-2.109.1')
             await dmd.makeAvailable()
             expect(gpgSpy).toHaveBeenCalled()
