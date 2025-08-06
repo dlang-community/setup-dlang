@@ -105,6 +105,8 @@ Examples:
     gdmd_sha: '0a64b92ec5ad1177988496df4f3ca47c47580501'
     # turn off gpg verification (only dmd archives currently undergo this verification)
     verify_sig: false
+    # set DC to `gdc-12` and DMD to `gdmd-12` instead of `/usr/bin/gdc-12`
+    dc_format: basename
 ```
 
 ### compiler
@@ -168,6 +170,24 @@ You can specify the version as:
 The default value is `any`.
 You can disable installing an additional `dub` by passing an empty string.
 Note that this does not affect the `dub` executable that comes packaged with `dmd` and `ldc2`.
+
+### dc_format
+
+This option allows you to change the path value of the `DC` and `DMD` environment variables set by this action.
+There are three possible values:
+- `absolute`
+- `basename`
+- `shortname`
+
+Assuming that `ldc2` has been downloaded and extracted to the following directories, the `dc_format` input would set `$DC` like so:
+
+| | `C:\Program Files\ldc2-1.41.0-windows` | `/home/toolcache/cache/ldc2-1.41.0-linux` |
+| `absolute` | `C:\Program Files\ldc2-1.41.0-windows\bin\ldc2.exe` | `/home/toolcache/cache/ldc2-1.41.0-linux/bin/ldc2-1.40` |
+| `basename` | `ldc2.exe` | `ldc2-1.40` |
+| `shortname` | `ldc2` | `ldc2-1.40` |
+
+The default value for this setting is `absolute`.
+Previously, before `v2`, the action would set the variable in the same way `shortname` does now.
 
 ### gh_token
 
@@ -276,3 +296,9 @@ This is a special value that means:
 2. if the compiler is `gdc`, install latest `dub`
 
 This has become the default value because most D projects use `dub` to build and it is a hindrance to manually specify it just because `gdc` doesn't come with it.
+
+Added the `dc_format` input to control how the `DC` and `DMD` variables are set.
+They allow setting the variables to:
+- the absolute path of the compiler executable
+- the basename of the executable
+- the basename without the `.exe` extension

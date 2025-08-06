@@ -198,3 +198,65 @@ jobs:
       - name : Compile with dub
         run: |
           cd .github && dub run --single hello.d --compiler=${DC}
+
+  dc-format:
+    needs: verify-index-js-up-to-date
+    name: Check dc_format input
+    strategy:
+      max-parallel: 5
+      fail-fast: false
+      matrix:
+        include:
+          - { dc: dmd,        os: ubuntu-latest,  dc_format: absolute }
+          - { dc: ldc,        os: windows-latest, dc_format: absolute }
+          - { dc: gdc-14,     os: ubuntu-latest,  dc_format: shortname }
+          - { dc: ldc,        os: windows-latest, dc_format: basename }
+          - { dc: ldc-1.41.0, os: macos-latest,   dc_format: basename }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/verify-d-compiler
+        with:
+          dc: ${{ matrix.dc }}
+          dc_format: ${{ matrix.dc_format }}
+
+      - name: Check DC and DMD variables
+        run: |
+          fail=
+
+          for var in DC DMD; do
+              value="${!var}"
+
+              base=$(basename "${value}")
+              case "${DC_FORMAT}" in
+                  absolute)
+                      expected=$(command -v "${base}")
+                      if [[ ${{ matrix.os }} == windows-* ]]; then
+                          expected=$(cygpath -aw "${expected}")
+                      fi
+                      ;;
+                  basename)
+                      expected="${base}"
+                      ;;
+                  shortname)
+                      expected="${base%.exe}"
+                      ;;
+                  *)
+                      echo "Unknown DC_FORMAT: ${DC_FORMAT}"
+                      exit 1
+                      ;;
+              esac
+
+              echo -n "Checking if ${var} (${value}) is ${expected}..."
+              if [[ ${value} == "${expected}" ]]; then
+                  echo " good"
+              else
+                  echo " fail"
+                  fail=1
+              fi
+          done
+
+          [[ -z ${fail} ]] || exit 1
+        env:
+          DC_FORMAT: ${{ matrix.dc_format }}
+        shell: bash

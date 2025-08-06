@@ -9,6 +9,15 @@ inputs:
     description: "DUB version string, for example 'any', 'latest', or, '1.29.0'"
     default: any
     required: false
+  dc_format:
+    description: "The way the $DC and $DMD variables are set: absolute path or basename"
+    default: absolute
+    required: true
+    type: choice
+    options:
+      - absolute
+      - basename
+      - shortname
   gh_token:
     description: "Token to use when doing Github API request (for ldc-master)"
     default: ${{ github.token }}

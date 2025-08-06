@@ -124,14 +124,58 @@ describe('Test Compiler class', () => {
         expect(process.env['DMD']).toBe(`${root}${bin}\\${dmdWrapper}.exe`)
     })
 
-    test('DC and DMD get set to the absolute path of the compiler', () => {
-	for (const platform of [ 'linux', 'win32', 'darwin', 'freebsd' ]) {
-        const sep = SETTINGS.sep = '/'
-        const exeExt = SETTINGS.exeExt = ''
-	    Object.defineProperty(process, 'platform', { value: platform })
-	    c.setDC(root)
-        expect(process.env['DC']).toBe(root + bin + sep + name + exeExt)
-        expect(process.env['DMD']).toBe(root + bin + sep + dmdWrapper + exeExt)
-	}
+    describe('Test DC and DMD path format', () => {
+        const origDcFormat = SETTINGS.dcFormat
+        beforeEach(() => SETTINGS.sep = '/')
+        afterEach(() => SETTINGS.dcFormat = origDcFormat)
+
+        test('default is absolute', () => {
+            SETTINGS.exeExt = '.exe'
+            c.setDC(root)
+            expect(process.env['DC']).toBe(root + bin + '/' + name + '.exe')
+            expect(process.env['DMD']).toBe(root + bin + '/' + dmdWrapper + '.exe')
+        })
+
+        test('explicit absolute', () => {
+            SETTINGS.exeExt = ''
+            SETTINGS.dcFormat = 'absolute'
+            c.setDC(root)
+            expect(process.env['DC']).toBe(root + bin + '/' + name)
+            expect(process.env['DMD']).toBe(root + bin + '/' + dmdWrapper)
+        })
+
+        describe('basename', () => {
+            beforeEach(() => SETTINGS.dcFormat = 'basename')
+            test('posix', () => {
+                SETTINGS.exeExt = ''
+                c.setDC(root)
+                expect(process.env['DC']).toBe(name)
+                expect(process.env['DMD']).toBe(dmdWrapper)
+            })
+
+            test('windows', () => {
+                SETTINGS.exeExt = '.exe'
+                c.setDC(root)
+                expect(process.env['DC']).toBe(name + '.exe')
+                expect(process.env['DMD']).toBe(dmdWrapper + '.exe')
+            })
+        })
+
+        describe('shortname', () => {
+            beforeEach(() => SETTINGS.dcFormat = 'shortname')
+            test('posix', () => {
+                SETTINGS.exeExt = ''
+                c.setDC(root)
+                expect(process.env['DC']).toBe(name)
+                expect(process.env['DMD']).toBe(dmdWrapper)
+            })
+
+            test('windows', () => {
+                SETTINGS.exeExt = '.exe'
+                c.setDC(root)
+                expect(process.env['DC']).toBe(name)
+                expect(process.env['DMD']).toBe(dmdWrapper)
+            })
+        })
     })
 })

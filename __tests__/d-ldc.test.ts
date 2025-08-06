@@ -514,4 +514,17 @@ describe('Test makeAvailable', () => {
         expect(process.env['DC']).toBe(root + '\\ldc2-1.39.0-windows-multilib\\bin\\ldc2.exe')
         expect(process.env['DMD']).toBe(root + '\\ldc2-1.39.0-windows-multilib\\bin\\ldmd2.exe')
     })
+
+    describe('test DC and DMD format', () => {
+        const origDcFormat = SETTINGS.dcFormat
+        afterEach(() => SETTINGS.dcFormat = origDcFormat)
+
+        test('shortname', async () => {
+            SETTINGS.dcFormat = 'shortname'
+            const dmd = await init('ldc-1.39.0')
+            await dmd.makeAvailable()
+            expect(process.env['DC']).toBe('ldc2')
+            expect(process.env['DMD']).toBe('ldmd2')
+        })
+    })
 })

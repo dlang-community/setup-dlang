@@ -535,4 +535,18 @@ describe('Test makeAvailable', () => {
             expect(gpgSpy).toHaveBeenCalled()
         })
     })
+
+    describe('test DC and DMD format', () => {
+        const origDcFormat = SETTINGS.dcFormat
+        afterEach(() => SETTINGS.dcFormat = origDcFormat)
+
+        test('basename', async () => {
+            SETTINGS.dcFormat = 'basename'
+            SETTINGS.exeExt = '.exe'
+            const dmd = await init('dmd-2.108')
+            await dmd.makeAvailable()
+            expect(process.env['DC']).toBe('dmd.exe')
+            expect(process.env['DMD']).toBe('dmd.exe')
+        })
+    })
 })
