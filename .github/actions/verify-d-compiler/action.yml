@@ -16,6 +16,15 @@ inputs:
     description: "Use .sig file to verify downloaded archives"
     type: boolean
     default: true
+  dc_format:
+    description: "The way the $DC and $DMD variables are set: absolute path or basename"
+    default: absolute
+    required: true
+    type: choice
+    options:
+      - absolute
+      - basename
+      - shortname
 runs:
   using: "composite"
   steps:
@@ -26,6 +35,7 @@ runs:
         gh_token: ${{ inputs.gh_token }}
         gdmd_sha: ${{ inputs.gdmd_sha }}
         verify_sig: ${{ inputs.verify_sig }}
+        dc_format: ${{ inputs.dc_format }}
 
     - name: Verify D compiler ($DC)
       shell: bash

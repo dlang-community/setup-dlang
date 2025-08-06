@@ -5,6 +5,7 @@ import * as utils from './utils'
 import * as fs from 'fs';
 import * as semver from './semver'
 import * as exec from '@actions/exec'
+import { formatDc } from './dc-format'
 
 import SETTINGS from './settings'
 
@@ -113,8 +114,10 @@ export class Compiler implements ITool {
 
     /** Set the DC and DMD environment variable to point to the newly extracted compiler */
     setDC(root: string) {
-        core.exportVariable("DC", root + this.binPath + SETTINGS.sep + this.name + SETTINGS.exeExt)
-        core.exportVariable("DMD", root + this.binPath + SETTINGS.sep + this.dmdWrapperExeName + SETTINGS.exeExt)
+        for (const [env, name] of [["DC", this.name], ["DMD", this.dmdWrapperExeName]]) {
+            const absPath = root + this.binPath + SETTINGS.sep + name + SETTINGS.exeExt
+            core.exportVariable(env, formatDc(absPath, SETTINGS.dcFormat))
+        }
     }
 
     /** Take all the necessary steps to make the compiler available on the host
@@ -812,8 +815,7 @@ export class GDC implements ITool {
 	console.log(`Installing ${binName}`)
 	await exec.exec('sudo apt-get update')
 	await exec.exec('sudo', ['apt-get', 'install', '-y', binName])
-	console.log(`Setting DC to '/usr/bin/${binName}'`)
-	core.exportVariable('DC', `/usr/bin/${binName}`)
+        GDC.setEnv('DC', `/usr/bin/${binName}`)
     }
 
     /** Install gdmd from https://github.com/D-Programming-GDC/gdmd and set DMD to point to it */
@@ -835,7 +837,12 @@ export class GDC implements ITool {
 	await exec.exec('sudo', ['cp', cached + '/gdmd', binName])
 	await exec.exec('sudo', ['chmod', '+x', binName])
 
-	console.log(`Setting DMD to '${binName}'`)
-	core.exportVariable('DMD', binName)
+        GDC.setEnv('DMD', binName)
+    }
+
+    private static setEnv(variable: string, absPath: string) {
+        const value = formatDc(absPath, SETTINGS.dcFormat)
+        console.log(`Setting ${variable} to '${value}'`)
+        core.exportVariable(variable, value)
     }
 }

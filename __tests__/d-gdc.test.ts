@@ -2,6 +2,9 @@ import { GDC } from '../src/d'
 import * as testUtils from './test-helpers.test'
 import * as exec from '@actions/exec'
 import * as tc from '@actions/tool-cache'
+import SETTINGS from '../src/settings'
+
+const GdmdSha = 'dc0ad9f739795f3ce5c69825efcd5d1d586bb013'
 
 testUtils.saveProcessRestorePoint()
 testUtils.hideConsoleLogs()
@@ -13,8 +16,7 @@ beforeEach(() => {
 })
 
 async function init (version: string) {
-    const gdmdSha = 'dc0ad9f739795f3ce5c69825efcd5d1d586bb013'
-    const gdc = await GDC.initialize(version, gdmdSha)
+    const gdc = await GDC.initialize(version, GdmdSha)
     await gdc.makeAvailableGdc()
 }
 
@@ -91,3 +93,15 @@ describe('Gdmd tests', () => {
     })
 })
 
+describe('test DC and DMD format', () => {
+    const origDcFormat = SETTINGS.dcFormat
+    afterEach(() => SETTINGS.dcFormat = origDcFormat)
+
+    test('shortname', async () => {
+        SETTINGS.dcFormat = 'shortname'
+        const gdc = await GDC.initialize('gdc-14', GdmdSha)
+        await gdc.makeAvailable()
+        expect(process.env['DC']).toBe('gdc-14')
+        expect(process.env['DMD']).toBe('gdmd-14')
+    })
+})
