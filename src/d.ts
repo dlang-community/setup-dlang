@@ -799,7 +799,7 @@ export class Redub implements ITool {
 	    let rname = JSON.parse(json)["tag_name"];
 	    if (rname == undefined) {
 		console.log(json)
-		throw new Error("Couldn't load release name for dub latest version");
+		throw new Error("Couldn't load release name for redub latest version");
 	    }
 	    version = rname;
 	}
@@ -835,11 +835,12 @@ export class Redub implements ITool {
     private async getCached(): Promise<string> {
 	let cached = await tc.find(this.name, this.version)
 	if (!cached) {
+		console.log(`Downloading ${this.url}`);
 	    const archive = await utils.downloadTool(this.url);
-		const exe = this.name + exeExt;
-		fs.renameSync(archive, exe);
 	    cached = await tc.cacheFile(archive,
 					this.exeName, this.name, this.version)
+		const exePath = cached +sep+ this.exeName;
+		fs.chmodSync(exePath, 0o755);
 	}
 	return cached
     }

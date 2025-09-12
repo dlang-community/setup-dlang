@@ -32,38 +32,46 @@ export async function run() {
     try {
 	let { d_compiler, gh_token, dub_version, redub_version, gdmd_sha } = getActionInputs();
 
-	let compiler: d.ITool
+	let compiler_promise: Promise<d.ITool>
 	if (d_compiler.startsWith('dmd'))
-	    compiler = await d.DMD.initialize(d_compiler, gh_token)
+	    compiler_promise = d.DMD.initialize(d_compiler, gh_token)
 	else if (d_compiler.startsWith('ldc'))
-	    compiler = await d.LDC.initialize(d_compiler, gh_token)
+	    compiler_promise = d.LDC.initialize(d_compiler, gh_token)
 	else if (d_compiler.startsWith('gdc'))
-	    compiler = await d.GDC.initialize(d_compiler, gdmd_sha)
+	    compiler_promise = d.GDC.initialize(d_compiler, gdmd_sha)
 	else
 	    throw new Error(`Unrecognized compiler: '${d_compiler}'`)
 
-	let dub: d.Dub | undefined
+	let dub_promise: Promise<d.Dub | undefined> = Promise.resolve(undefined);
         if (dub_version.length) {
-	    dub = await d.Dub.initialize(dub_version, gh_token)
+	        dub_promise = d.Dub.initialize(dub_version, gh_token)
             console.log(`Enabling ${d_compiler} with dub ${dub_version}`);
         } else
             console.log(`Enabling ${d_compiler}`);
 
-    let redub: d.Redub | undefined;
+    let redub_promise: Promise<d.Redub | undefined> = Promise.resolve(undefined);
     if(redub_version.length) {
-        redub = await d.Redub.initialize(redub_version, gh_token);
+        redub_promise = d.Redub.initialize(redub_version, gh_token);
         console.log(`Enabling Redub ${redub_version}`);
     }
 
-	await compiler.makeAvailable()
-	await dub?.makeAvailable()
-    await redub?.makeAvailable();
+    const [compiler, dub, redub] = await Promise.all([
+        compiler_promise,
+        dub_promise,
+        redub_promise
+    ]);
 
-        console.log("Done");
+    await Promise.all([
+        compiler.makeAvailable(),
+        dub?.makeAvailable(),
+        redub?.makeAvailable()
+    ]);
+    console.log("Done");
+
     } catch (error) {
-	if (error instanceof Error) {
-	    console.log(error.message);
-	    core.setFailed(error.message);
-	}
+        if (error instanceof Error) {
+            console.log(error.message);
+            core.setFailed(error.message);
+        }
     }
 }
