@@ -47,12 +47,12 @@ export async function run() {
             dub_promise = d.Dub.initialize(dub_version, gh_token)
         }
 
-        let redub_promise: Promise<d.Redub | undefined> = Promise.resolve(undefined);
-        if(redub_version.length) {
-            redub_promise = d.Redub.initialize(redub_version, gh_token);
-        }
+        const redub_promise = redub_version ? d.Redub.initialize(redub_version, gh_token) : undefined
 
-        console.log(`Enabling ${d_compiler}${dub_version ? ` with dub ${dub_version}` : ""}${redub_version ? ` with redub ${redub_version}` : ""}`);
+        console.log('Enabling:')
+        console.log(`  compiler '${d_compiler}'`)
+        if (dub_version) console.log(`  dub '${dub_version}'`)
+        if (redub_version) console.log(`  redub '${redub_version}'`)
 
         const [compiler, dub, redub] = await Promise.all([
             compiler_promise,

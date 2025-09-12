@@ -766,7 +766,7 @@ export class Dub implements ITool {
 
 export class Redub implements ITool {
     public readonly name = 'redub'
-    public readonly exeName = this.name+ exeExt;
+    public readonly exeName = this.name + exeExt;
     constructor(public url: string, public version: string){}
 
 	static getUrlArchSuffix (version: string)
@@ -785,7 +785,7 @@ export class Redub implements ITool {
 	Possible values for version are:
 
 	- 'latest'. The release is taken from:
-	https://api.github.com/repos/dlang/dub/releases/latest
+	https://api.github.com/repos/MrcSnm/redub/releases/latest
 
 	- '1.37.0'. This corresponds to the tag 'v1.37.0'. Note that
           pre-releases like 'v1.37.0-rc.1' are not supported.
@@ -806,8 +806,7 @@ export class Redub implements ITool {
 
 	const matches = version.match(/^v?(1\.\d+\.\d+)(-.+)?$/);
 	if (!matches)
-	    throw new Error("unrecognized Redub version: '" + version +
-		"'. Make sure to use the redub version, and not the frontend one.");
+	    throw new Error("unrecognized Redub version: '" + version + '"')
 	if (matches[2])
 	    throw new Error("only release versions of Redub are supported, not: " + version)
 	version = "v" + matches[1];
@@ -839,7 +838,7 @@ export class Redub implements ITool {
 	    const archive = await utils.downloadTool(this.url);
 	    cached = await tc.cacheFile(archive,
 					this.exeName, this.name, this.version)
-		const exePath = cached +sep+ this.exeName;
+		const exePath = cached + sep + this.exeName;
 		fs.chmodSync(exePath, 0o755);
 	}
 	return cached
