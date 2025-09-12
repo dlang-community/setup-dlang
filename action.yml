@@ -10,8 +10,7 @@ inputs:
     default: any
     required: false
   redub:
-    description: "Redub version string, for example 'any', 'latest', or, '1.24.13'"
-    default: any
+    description: "Redub version string, for example 'latest' or '1.24.13'"
     required: false
   gh_token:
     description: "Token to use when doing Github API request (for ldc-master)"
