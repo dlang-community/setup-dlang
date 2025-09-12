@@ -169,6 +169,14 @@ The default value is `any`.
 You can disable installing an additional `dub` by passing an empty string.
 Note that this does not affect the `dub` executable that comes packaged with `dmd` and `ldc2`.
 
+### redub
+
+Selecting a version of redub makes it being installed
+You can specify the version as:
+- `latest` - install the latest version from https://github.com/MrcSnm/redub/releases.
+  This may require an api token.
+- `1.24.13` - install https://github.com/MrcSnm/redub/releases/tag/v1.24.13
+
 ### gh_token
 
 A github token used to perform queries to https://api.github.com.
