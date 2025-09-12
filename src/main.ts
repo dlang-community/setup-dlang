@@ -21,14 +21,16 @@ export function getActionInputs() {
             dub_version = ''
     }
 
+    const redub_version = core.getInput('redub') || "";
+
     const gdmd_sha = core.getInput('gdmd_sha') || ""
 
-    return { d_compiler, gh_token, dub_version, gdmd_sha };
+    return { d_compiler, gh_token, dub_version, redub_version, gdmd_sha };
 }
 
 export async function run() {
     try {
-	let { d_compiler, gh_token, dub_version, gdmd_sha } = getActionInputs();
+	let { d_compiler, gh_token, dub_version, redub_version, gdmd_sha } = getActionInputs();
 
 	let compiler: d.ITool
 	if (d_compiler.startsWith('dmd'))
@@ -47,8 +49,15 @@ export async function run() {
         } else
             console.log(`Enabling ${d_compiler}`);
 
+    let redub: d.Redub | undefined;
+    if(redub_version.length) {
+        redub = await d.Redub.initialize(redub_version, gh_token);
+        console.log(`Enabling Redub ${redub_version}`);
+    }
+
 	await compiler.makeAvailable()
 	await dub?.makeAvailable()
+    await redub?.makeAvailable();
 
         console.log("Done");
     } catch (error) {
