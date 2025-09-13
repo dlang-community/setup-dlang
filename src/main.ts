@@ -32,6 +32,11 @@ export async function run() {
     try {
         let { d_compiler, gh_token, dub_version, redub_version, gdmd_sha } = getActionInputs();
 
+        console.log('Enabling:')
+        console.log(`  compiler '${d_compiler}'`)
+        if (dub_version) console.log(`  dub '${dub_version}'`)
+        if (redub_version) console.log(`  redub '${redub_version}'`)
+
         let compiler_promise: Promise<d.ITool>
         if (d_compiler.startsWith('dmd'))
             compiler_promise = d.DMD.initialize(d_compiler, gh_token)
@@ -43,11 +48,6 @@ export async function run() {
             throw new Error(`Unrecognized compiler: '${d_compiler}'`)
 
         const redub_promise = redub_version ? d.Redub.initialize(redub_version, gh_token) : undefined
-
-        console.log('Enabling:')
-        console.log(`  compiler '${d_compiler}'`)
-        if (dub_version) console.log(`  dub '${dub_version}'`)
-        if (redub_version) console.log(`  redub '${redub_version}'`)
 
         const [compiler, redub] = await Promise.all([
             compiler_promise,

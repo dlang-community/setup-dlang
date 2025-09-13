@@ -795,16 +795,17 @@ export class Redub implements ITool {
 	- 'latest'. The release is taken from:
 	https://api.github.com/repos/MrcSnm/redub/releases/latest
 
-	- 'nightly'. The release is taken from https://github.com/MrcSnm/redub/releases/nightly
+	- 'master'. The release is taken from https://github.com/MrcSnm/redub/releases/nightly
 
 	- '1.37.0'. This corresponds to the tag 'v1.37.0'. Note that
           pre-releases like 'v1.37.0-rc.1' are not supported.
     */
     static async initialize(version: string, token: string) {
-		const archSuffix = Redub.getUrlArchSuffix(version)
+		const archSuffix = Redub.getUrlArchSuffix(version);
+		const os = Redub.getOS();
 
-		if (version == "nightly") {
-			return new Redub(`https://github.com/MrcSnm/redub/releases/download/nightly/redub-latest-${Redub.getOS()}-${archSuffix}${exeExt}`, version);
+		if (version == "master") {
+			return new Redub(`https://github.com/MrcSnm/redub/releases/download/nightly/redub-latest-${os}-${archSuffix}${exeExt}`, version);
 		}
 		if (version === "latest") {
 			let json = await utils.body_as_text(
@@ -826,7 +827,7 @@ export class Redub implements ITool {
 			throw new Error("only release versions of Redub are supported, not: " + version)
 		version = "v" + matches[1];
 
-		const url = `https://github.com/MrcSnm/redub/releases/download/${version}/redub-${version}-${Redub.getOS()}-${archSuffix}${exeExt}`
+		const url = `https://github.com/MrcSnm/redub/releases/download/${version}/redub-${version}-${os}-${archSuffix}${exeExt}`
 		return new Redub(url, version)
     }
 
