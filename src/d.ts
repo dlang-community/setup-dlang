@@ -774,7 +774,7 @@ export class Redub implements ITool {
 		{
 			case "x64": return "x86_64";
 			case "arm64": return "arm64";
-			default: throw new Error(`Unsupported platform-arch ${process.arch}) for redub releases ${version}`);
+			default: throw new Error(`Unsupported arch ${process.arch} for redub releases ${version}`);
 		}
     }
 
