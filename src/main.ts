@@ -42,11 +42,6 @@ export async function run() {
         else
             throw new Error(`Unrecognized compiler: '${d_compiler}'`)
 
-        let dub_promise: Promise<d.Dub | undefined> = Promise.resolve(undefined);
-        if (dub_version.length) {
-            dub_promise = d.Dub.initialize(dub_version, gh_token)
-        }
-
         const redub_promise = redub_version ? d.Redub.initialize(redub_version, gh_token) : undefined
 
         console.log('Enabling:')
@@ -54,17 +49,23 @@ export async function run() {
         if (dub_version) console.log(`  dub '${dub_version}'`)
         if (redub_version) console.log(`  redub '${redub_version}'`)
 
-        const [compiler, dub, redub] = await Promise.all([
+        const [compiler, redub] = await Promise.all([
             compiler_promise,
-            dub_promise,
             redub_promise
         ]);
 
+        let dub: d.Dub | undefined;
+        if (dub_version.length) {
+            dub = await d.Dub.initialize(dub_version, gh_token)
+        }
+
+
         await Promise.all([
             compiler.makeAvailable(),
-            dub?.makeAvailable(),
             redub?.makeAvailable()
         ]);
+        await dub?.makeAvailable();
+
         console.log("Done");
 
     } catch (error) {

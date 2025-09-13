@@ -769,15 +769,23 @@ export class Redub implements ITool {
     public readonly exeName = this.name + exeExt;
     constructor(public url: string, public version: string){}
 
-	static getUrlArchSuffix (version: string)
-	{
+	static getUrlArchSuffix (version: string) {
 		switch(process.arch)
 		{
 			case "x64": return "x86_64";
 			case "arm64": return "arm64";
-			default: throw new Error(`Unsupported platform-arch triple (${process.platform}-${process.arch}) for redub releases ${version}`);
+			default: throw new Error(`Unsupported platform-arch ${process.arch}) for redub releases ${version}`);
 		}
     }
+
+	static getOS () {
+		switch (process.platform) {
+			case "win32": return "windows";
+			case "linux": return "linux";
+			case "darwin": return "osx";
+			default: throw new Error("unsupported platform: " + process.platform);
+		}
+	}
 
 
     /** Parse a version string and compute the associated version
@@ -787,47 +795,39 @@ export class Redub implements ITool {
 	- 'latest'. The release is taken from:
 	https://api.github.com/repos/MrcSnm/redub/releases/latest
 
+	- 'nightly'. The release is taken from https://github.com/MrcSnm/redub/releases/nightly
+
 	- '1.37.0'. This corresponds to the tag 'v1.37.0'. Note that
           pre-releases like 'v1.37.0-rc.1' are not supported.
     */
     static async initialize(version: string, token: string) {
-	if (version === "latest") {
-	    let json = await utils.body_as_text(
-		`https://api.github.com/repos/MrcSnm/redub/releases/latest`,
-		token
-	    );
-	    let rname = JSON.parse(json)["tag_name"];
-	    if (rname == undefined) {
-		console.log(json)
-		throw new Error("Couldn't load release name for redub latest version");
-	    }
-	    version = rname;
-	}
+		const archSuffix = Redub.getUrlArchSuffix(version)
 
-	const matches = version.match(/^v?(1\.\d+\.\d+)(-.+)?$/);
-	if (!matches)
-	    throw new Error("unrecognized Redub version: '" + version + '"')
-	if (matches[2])
-	    throw new Error("only release versions of Redub are supported, not: " + version)
-	version = "v" + matches[1];
+		if (version == "nightly") {
+			return new Redub(`https://github.com/MrcSnm/redub/releases/download/nightly/redub-latest-${Redub.getOS()}-${archSuffix}${exeExt}`, version);
+		}
+		if (version === "latest") {
+			let json = await utils.body_as_text(
+				`https://api.github.com/repos/MrcSnm/redub/releases/latest`,
+				token
+			);
+			let rname = JSON.parse(json)["tag_name"];
+			if (rname == undefined) {
+				console.log(json)
+				throw new Error("Couldn't load release name for redub latest version");
+			}
+			version = rname;
+		}
 
-	const archSuffix = Redub.getUrlArchSuffix(version)
-	let url: string
-	switch (process.platform) {
-            case "win32":
-		url = `https://github.com/MrcSnm/redub/releases/download/${version}/redub-${version}-windows-${archSuffix}.exe`
-		break
-            case "linux":
-		url = `https://github.com/MrcSnm/redub/releases/download/${version}/redub-${version}-linux-${archSuffix}`
-		break
-            case "darwin":
-		url = `https://github.com/MrcSnm/redub/releases/download/${version}/redub-${version}-osx-${archSuffix}`
-		break
-        default:
-		throw new Error("unsupported platform: " + process.platform);
-	}
+		const matches = version.match(/^v?(1\.\d+\.\d+)(-.+)?$/);
+		if (!matches)
+			throw new Error("unrecognized Redub version: '" + version + '"')
+		if (matches[2])
+			throw new Error("only release versions of Redub are supported, not: " + version)
+		version = "v" + matches[1];
 
-	return new Redub(url, version)
+		const url = `https://github.com/MrcSnm/redub/releases/download/${version}/redub-${version}-${Redub.getOS()}-${archSuffix}${exeExt}`
+		return new Redub(url, version)
     }
 
     /** Return the path to where the url archive was extracted, after caching it */

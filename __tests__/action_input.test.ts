@@ -101,10 +101,11 @@ describe('Action messages', () => {
 	await main.run()
 
 	expect(nopTool.makeAvailable).toHaveBeenCalledTimes(2)
-	expect(consoleSpy.mock.calls.length).toBe(2)
-	expect(consoleSpy.mock.calls[0][0]).toMatch(compString)
-	expect(consoleSpy.mock.calls[0][0]).toMatch(dubString)
-	expect(consoleSpy.mock.calls[1][0]).toMatch('Done')
+	expect(consoleSpy.mock.calls.length).toBe(4)
+	expect(consoleSpy.mock.calls[0][0]).toMatch('Enabling')
+	expect(consoleSpy.mock.calls[1][0]).toMatch(compString)
+	expect(consoleSpy.mock.calls[2][0]).toMatch(dubString)
+	expect(consoleSpy.mock.calls[3][0]).toMatch('Done')
     })
 
     test('Specifying only the compiler', async () => {
@@ -113,10 +114,11 @@ describe('Action messages', () => {
 	await main.run()
 
 	expect(nopTool.makeAvailable).toHaveBeenCalledTimes(1)
-	expect(consoleSpy.mock.calls.length).toBe(2)
-	expect(consoleSpy.mock.calls[0][0]).toMatch(compString)
-	expect(consoleSpy.mock.calls[0][0]).not.toMatch('dub')
-	expect(consoleSpy.mock.calls[1][0]).toMatch('Done')
+	expect(consoleSpy.mock.calls.length).toBe(3)
+	expect(consoleSpy.mock.calls[0][0]).toMatch('Enabling')
+	expect(consoleSpy.mock.calls[1][0]).toMatch(compString)
+	expect(consoleSpy.mock.calls[1][0]).not.toMatch('dub')
+	expect(consoleSpy.mock.calls[2][0]).toMatch('Done')
     })
 
     test('Specifying an invalid compiler', async () => {
@@ -135,7 +137,7 @@ describe('Action messages', () => {
 	    mockInputs(comp)
 	    await main.run()
 	    expect(nopTool.makeAvailable).toHaveBeenCalled()
-	    expect(consoleSpy).toHaveBeenCalledTimes(2)
+	    expect(consoleSpy).toHaveBeenCalledTimes(3)
 	    nopTool.makeAvailable.mockClear()
 	    consoleSpy.mockClear()
 	}

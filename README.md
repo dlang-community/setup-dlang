@@ -175,6 +175,7 @@ Selecting a version of redub makes it being installed
 You can specify the version as:
 - `latest` - install the latest version from https://github.com/MrcSnm/redub/releases.
   This may require an api token.
+- `nightly` - Installs the nightly version from https://github.com/MrcSnm/redub/releases/nightly
 - `1.24.13` - install https://github.com/MrcSnm/redub/releases/tag/v1.24.13
 
 ### gh_token
