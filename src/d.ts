@@ -149,8 +149,8 @@ export class DMD extends Compiler {
 
        - 'dmd' or 'dmd-latest' or 'dmd-beta'. This names resolve to
        the highest available versions as specified on
-       htpps://downloads.dlang.org/releases/LATEST or on
-       htpps://downloads.dlang.org/pre-releases/LATEST. 'dmd' and
+       https://downloads.dlang.org/releases/LATEST or on
+       https://downloads.dlang.org/pre-releases/LATEST. 'dmd' and
        'dmd-latest' use the former url, 'dmd-beta' uses the latter.
        In case the beta version is lower than the normal version the
        normal version is picked.
@@ -814,7 +814,7 @@ export class GDC implements ITool {
     /** Install gdc from the apt repos and set DC to point to it */
     async makeAvailableGdc () {
 	const binName = `gdc${this.aptPkgVersion}`
-	console.log(`Installing binName`)
+	console.log(`Installing ${binName}`)
 	await exec.exec('sudo apt-get update')
 	await exec.exec('sudo', ['apt-get', 'install', '-y', binName])
 	console.log(`Setting DC to '/usr/bin/${binName}'`)
