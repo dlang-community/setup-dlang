@@ -46,11 +46,13 @@ jobs:
             dmd-master,
         ]
         include:
-          # Needs >=dmd-2.107.1 due to https://issues.dlang.org/show_bug.cgi?id=24137
-          - { os: macOS-latest, dc: dmd-2.108.1-rc.1 }
-          - { os: macOS-latest, dc: dmd-2.109 }
-          - { os: macOS-latest, dc: dmd-latest }
+          # https://github.com/dlang/dmd/issues/21126
           - { os: macOS-latest, dc: dmd-master }
+          # Needs >=dmd-2.107.1 due to https://issues.dlang.org/show_bug.cgi?id=24137
+          - { os: macOS-14, dc: dmd-2.108.1-rc.1 }
+          - { os: macOS-14, dc: dmd-2.109 }
+          - { os: macOS-14, dc: dmd-latest }
+          - { os: macOS-14, dc: dmd-master }
           - { os: macOS-13, dc: dmd-2.108.1-rc.1 }
           - { os: macOS-13, dc: dmd-2.107 }
           - { os: macOS-13, dc: dmd-latest }
@@ -68,10 +70,9 @@ jobs:
       max-parallel: 5
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest, macOS-latest, macOS-13 ]
+        os: [ ubuntu-latest, windows-latest, macOS-14, macOS-13 ]
         dc: [
             ldc,
-            ldc-1.19.0,
             ldc-1.37.0-beta1,
             ldc-1.36,
             ldc-1.38b,
@@ -80,9 +81,14 @@ jobs:
             ldc^3,
             ldc-master,
         ]
-        exclude:
+        include:
           # arm64 binaries are available since ldc-1.25.0
-          - { os: macOS-latest, dc: ldc-1.19.0 }
+          - { os: macOS-13, dc: ldc-1.19.0 }
+
+          - { os: macOS-latest, dc: ldc }
+          - { os: macOS-latest, dc: ldc-beta }
+          - { os: macOS-latest, dc: ldc-master }
+          - { os: macOS-latest, dc: ldc-1.41.0 }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -143,19 +149,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:  [ ubuntu-latest, windows-latest, macos-latest, macOS-13 ]
-        dc:  [ ldc-latest, dmd-latest, gdc, gdc-12 ]
+        os:  [ ubuntu-latest, windows-latest, macOS-14, macOS-13 ]
+        dc:  [ ldc-latest, dmd-latest ]
         dub: [ 1.19.0, any, latest ]
+        include:
+          - { os: ubuntu-latest, dub: 1.19.0, dc: gdc }
+          - { os: ubuntu-latest, dub: any,    dc: gdc-12 }
+          - { os: ubuntu-latest, dub: latest, dc: gdc }
+          - { os: ubuntu-latest, dub: latest, dc: gdc-12 }
+
+          - { os: macos-latest, dub: any,    dc: dmd-master }
+          - { os: macos-latest, dub: latest, dc: ldc }
+          - { os: macos-latest, dub: 1.40.0, dc: ldc-beta }
         exclude:
           # Excluded because those are actually Linux executables
           - { os: windows-latest, dub: 1.19.0 }
-          # gdc only supports Linux
-          - { os: windows-latest, dc: gdc }
-          - { os: windows-latest, dc: gdc-12 }
-          - { os: macOS-13, dc: gdc }
-          - { os: macOS-13, dc: gdc-12 }
-          - { os: macOS-latest, dc: gdc }
-          - { os: macOS-latest, dc: gdc-12 }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
