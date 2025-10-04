@@ -7,7 +7,7 @@ import * as semver from './semver'
 import * as exec from '@actions/exec'
 
 const sep = (process.platform == 'win32' ? '\\' : '/')
-const exeExt = (process.platform == 'win32' ? '.exe' : '')
+export const exeExt = (process.platform == 'win32' ? '.exe' : '')
 
 export const SETTINGS = {
     verify_sig: core.getInput('verify_sig') !== 'false'
@@ -770,6 +770,8 @@ export class Redub implements ITool {
     constructor(public url: string, public version: string){}
 
 	static getUrlArchSuffix (version: string) {
+		if(process.platform == "darwin")
+			return "universal";
 		switch(process.arch)
 		{
 			case "x64": return "x86_64";
