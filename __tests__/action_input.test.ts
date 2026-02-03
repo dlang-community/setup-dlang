@@ -11,11 +11,11 @@ describe('Testing compiler when...', function(){
     test('it is unspecified', () => {
 	Object.defineProperty(process, 'arch', { value: 'x64' })
 	expect(main.getActionInputs()).toStrictEqual({
-	    d_compiler: 'dmd-latest', gh_token: '', dub_version: '', gdmd_sha: '',})
+	    d_compiler: 'dmd-latest', gh_token: '', dub_version: '', gdmd_sha: '', redub_version: ''})
 
 	Object.defineProperty(process, 'arch', { value: 'arm64' })
 	expect(main.getActionInputs()).toStrictEqual({
-	    d_compiler: 'ldc-latest', gh_token: '', dub_version: '', gdmd_sha: '',})
+	    d_compiler: 'ldc-latest', gh_token: '', dub_version: '', gdmd_sha: '', redub_version: ''})
     })
 
     function mockCompiler(compiler: string) {
@@ -30,12 +30,12 @@ describe('Testing compiler when...', function(){
 	Object.defineProperty(process, 'arch', { value: 'x64' })
 	mockCompiler('ldc')
 	expect(main.getActionInputs()).toStrictEqual({
-	    d_compiler: 'ldc', gh_token: '', dub_version: '', gdmd_sha: '',})
+	    d_compiler: 'ldc', gh_token: '', dub_version: '', gdmd_sha: '', redub_version: ''})
 
 	Object.defineProperty(process, 'arch', { value: 'x64' })
 	mockCompiler('invalid text')
 	expect(main.getActionInputs()).toStrictEqual({
-	    d_compiler: 'invalid text', gh_token: '', dub_version: '', gdmd_sha: '',})
+	    d_compiler: 'invalid text', gh_token: '', dub_version: '', gdmd_sha: '', redub_version: ''})
     })
 
     // https://github.com/dlang-community/setup-dlang/issues/78
@@ -57,13 +57,15 @@ test('All action inputs', () => {
 		return "z"
 	    case "gdmd_sha":
 		return "t"
+		case "redub":
+		return "h"
 	    default:
 		throw new Error(`Unknown key '${key}'`)
 	}
     })
 
     expect(main.getActionInputs()).toStrictEqual({
-	d_compiler: 'x', dub_version: 'y', gh_token: 'z', gdmd_sha: 't'
+	d_compiler: 'x', dub_version: 'y', gh_token: 'z', gdmd_sha: 't', redub_version: 'h'
     })
 })
 
@@ -99,10 +101,11 @@ describe('Action messages', () => {
 	await main.run()
 
 	expect(nopTool.makeAvailable).toHaveBeenCalledTimes(2)
-	expect(consoleSpy.mock.calls.length).toBe(2)
-	expect(consoleSpy.mock.calls[0][0]).toMatch(compString)
-	expect(consoleSpy.mock.calls[0][0]).toMatch(dubString)
-	expect(consoleSpy.mock.calls[1][0]).toMatch('Done')
+	expect(consoleSpy.mock.calls.length).toBe(4)
+	expect(consoleSpy.mock.calls[0][0]).toMatch('Enabling')
+	expect(consoleSpy.mock.calls[1][0]).toMatch(compString)
+	expect(consoleSpy.mock.calls[2][0]).toMatch(dubString)
+	expect(consoleSpy.mock.calls[3][0]).toMatch('Done')
     })
 
     test('Specifying only the compiler', async () => {
@@ -111,10 +114,11 @@ describe('Action messages', () => {
 	await main.run()
 
 	expect(nopTool.makeAvailable).toHaveBeenCalledTimes(1)
-	expect(consoleSpy.mock.calls.length).toBe(2)
-	expect(consoleSpy.mock.calls[0][0]).toMatch(compString)
-	expect(consoleSpy.mock.calls[0][0]).not.toMatch('dub')
-	expect(consoleSpy.mock.calls[1][0]).toMatch('Done')
+	expect(consoleSpy.mock.calls.length).toBe(3)
+	expect(consoleSpy.mock.calls[0][0]).toMatch('Enabling')
+	expect(consoleSpy.mock.calls[1][0]).toMatch(compString)
+	expect(consoleSpy.mock.calls[1][0]).not.toMatch('dub')
+	expect(consoleSpy.mock.calls[2][0]).toMatch('Done')
     })
 
     test('Specifying an invalid compiler', async () => {
@@ -133,7 +137,7 @@ describe('Action messages', () => {
 	    mockInputs(comp)
 	    await main.run()
 	    expect(nopTool.makeAvailable).toHaveBeenCalled()
-	    expect(consoleSpy).toHaveBeenCalledTimes(2)
+	    expect(consoleSpy).toHaveBeenCalledTimes(3)
 	    nopTool.makeAvailable.mockClear()
 	    consoleSpy.mockClear()
 	}
