@@ -15,7 +15,7 @@ jobs:
     name: Verify that `dist/index.js` is up to date
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -57,7 +57,7 @@ jobs:
           - { os: macOS-15, dc: dmd-master }
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/verify-d-compiler
         with:
           dc: ${{ matrix.dc }}
@@ -86,7 +86,7 @@ jobs:
           - { os: macOS-latest, dc: ldc^3 }
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/verify-d-compiler
         with:
           dc: ${{ matrix.dc }}
@@ -101,7 +101,7 @@ jobs:
         gdmd_sha: [ latest, 27c4c660f30d03e6cf467781bbbd3bbcc3db5758 ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/verify-d-compiler
         with:
           dc: ${{ matrix.dc }}
@@ -120,7 +120,7 @@ jobs:
         os: [ ubuntu-latest, windows-latest, macOS-latest ]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/verify-d-compiler
 
   verify-sig:
@@ -133,7 +133,7 @@ jobs:
         verify_sig: [ true, false ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/verify-d-compiler
         with:
           verify_sig: ${{ matrix.verify_sig }}
@@ -162,7 +162,7 @@ jobs:
           - { os: windows-latest, dub: 1.19.0 }
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install D compiler
         uses: ./
         with:

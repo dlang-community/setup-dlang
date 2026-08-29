@@ -8,7 +8,7 @@ Support for [GDC](https://gdcproject.org/) is also available but only on Linux.
 Basic usage:
 ```yml
 steps:
-  - uses: actions/checkout@v4
+  - uses: actions/checkout@v7
   - uses: dlang-community/setup-dlang@v2
     with:
       compiler: dmd
@@ -33,7 +33,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install D compiler
         uses: dlang-community/setup-dlang@v2
@@ -69,7 +69,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install D compiler
         uses: dlang-community/setup-dlang@v2
