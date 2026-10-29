@@ -69,21 +69,19 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macOS-latest ]
+        # The oldest LDC tested is 1.41: older prebuilt binaries depend
+        # on libxml2.so.2, which is not shipped anymore by ubuntu-latest
+        # (26.04). https://github.com/ldc-developers/ldc/issues/4921
         dc: [
             ldc,
-            ldc-1.37.0-beta1,
-            ldc-1.36,
-            ldc-1.38b,
+            ldc-1.43.0-beta1,
+            ldc-1.41,
+            ldc-1.42b,
             ldc-latest,
             ldc-beta,
-            ldc^3,
+            ldc^2,
             ldc-master,
         ]
-        exclude:
-          - { os: macOS-latest, dc: ldc-1.37.0-beta1 }
-          - { os: macOS-latest, dc: ldc-1.36 }
-          - { os: macOS-latest, dc: ldc-1.38b }
-          - { os: macOS-latest, dc: ldc^3 }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
