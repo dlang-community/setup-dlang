@@ -10,7 +10,7 @@ inputs:
     default: ${{ github.token }}
     required: false
   gdmd_sha:
-    descript: "Commit in D-programming-gdc/gdmd"
+    description: "Commit in D-programming-gdc/gdmd"
     default: 'latest'
   verify_sig:
     description: "Use .sig file to verify downloaded archives"
